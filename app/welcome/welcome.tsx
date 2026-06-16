@@ -29,7 +29,7 @@ export function Welcome() {
   </ol>
 
   <p>
-    UPDATED
+    UPDATED - 12:59PM
   </p>
 
     </main>

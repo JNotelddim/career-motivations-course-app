@@ -64,19 +64,30 @@ Set deadlines for yourself that work for you.
   - 📖 [React Router docs](https://reactrouter.com/)
 
 - Metalab Sites (2.0) https://sites.metalab.com/docs
-  - Branch-driven auto deploy w/ GitHub
+  - Deployment via the Sites CLI (GitHub branch auto-deploy can't target a build sub-folder — see Deployment below)
   - User Identities via Okta Auth
   - User-specific content stored in localStorage only, because Sites db doens't have user-specific read security, and the content of the worksheets is likely to be personal information.
 
 ### Local Development
 `npm install` > `npm run dev` : `http://localhost:5173`
 
-for deployment:
-`npm build` & merge to `main`
+for deployment (see Metalab Sites Deployment below):
+`npm run build`, then publish the build output via the Sites CLI
 
 
 ### Metalab Sites Deployment
-  - automatic branch-based (`main`) deployment via GitHub repo of the `dist/*` contents.
+
+Deploying via the **Sites CLI** (terminal publish) — *not* GitHub branch auto-deploy.
+
+> **Why not GitHub auto-deploy?** Sites' GitHub integration extracts the **entire repo root** to the site
+> directory, with no way to scope the deploy to a build sub-folder. The docs reference a "Source path" setting
+> for exactly this, but per Jeremy (Sites maintainer, 2026-06-16) that's an **AI hallucination in the docs** —
+> sub-directory support doesn't actually exist. So GitHub auto-deploy is unusable here (it'd ship the repo root,
+> which just renders as a folder listing). GitHub connection has been left disconnected.
+
+- **Approach:** build locally, then publish the build output with the Sites CLI.
+- **TBD — which asset/folder we publish:** React Router's framework build emits to `build/client` (static client
+  assets), not `dist/` as earlier assumed. Confirm the actual output directory before wiring up the publish command.
 
 ### Docker (presently unused)
 
