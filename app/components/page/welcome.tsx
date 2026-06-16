@@ -28,6 +28,7 @@ export function Welcome() {
     </div>
 
   <ol>
+    {/** TODO: map from modules const */}
     <li><Link to="/module/1"><strong>Contracting</strong> — name the actual question, and what "better" looks like.</Link></li>
     <li><Link to="/module/2"><strong>Self-knowledge</strong> — energy/dread audit, lifeline, workview/lifeview.</Link></li>
     <li><Link to="/module/3"><strong>Motivators &amp; Anchors</strong> — what you won't trade away (Schein) + strengths.</Link></li>
