@@ -17,7 +17,7 @@ const useModulePageData = () => {
 
 export function Module() {
     const navigate = useNavigate();
-    const { moduleId, title, description, resources, questions } = useModulePageData();
+    const { moduleId, title, description, resources, sections } = useModulePageData();
 
     const isNextModuleEnabled = moduleId !== undefined && moduleId < lastModuleId;
     const isPrevModuleEnabled = moduleId !== undefined && moduleId > firstModuleId;
@@ -78,19 +78,21 @@ export function Module() {
       </ul>
     )}
     
-    <h2 className="text-xl font-semibold mt-4"> Questions </h2>
+    {!sections || sections.length === 0 ? (
+        <p className="text-md sm:text-lg">No sections available for this module.</p>
+    ) : (sections.map((section) => (
+              <div key={section.title} className="mb-2">
+                  <h3 className="text-lg font-semibold">{section.title}</h3>
 
-    {!questions || questions.length === 0 ? (
-        <p className="text-md sm:text-lg">No questions available for this module.</p>
-    ) : (
-      <ol className="list-decimal list-inside">
-          {questions.map((question) => (
-              <li key={question.id} className="mb-2">
-                  {question.text}
-                  {/** TODO: add text input with form events for saving response to local storage*/}
-              </li>
-          ))}
-      </ol>
+                  { /** TODO: adjust exercises map to accommodate different exercise types */} 
+                  {section.exercises.map((exercise) => (
+                      <div key={exercise.id} className="mb-2">
+                          <p>[{exercise.kind}] {exercise.prompt}</p>
+                          {/** TODO: add text input with form events for saving response to local storage*/}
+                      </div>
+                  ))}
+              </div>
+          ))
     )}
 
     </main>
