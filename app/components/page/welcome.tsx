@@ -1,10 +1,15 @@
 import { useNavigate } from "react-router";
+import { Button, Link } from "../base";
 
 export function Welcome() {
   const navigate = useNavigate();
 
   return (
     <main className="flex flex-col items-start justify-center gap-4 p-8 max-w-3xl mx-auto">
+
+    <div className="flex w-full flex-row-reverse">
+      <Button onClick={() => navigate('/account')}> Account 👤</Button>
+    </div>
 
     <h1 className="text-2xl font-bold sm:text-3xl">Career Self-Reflection & Motivations App</h1>
 
@@ -19,22 +24,21 @@ export function Welcome() {
   <h2 className="text-xl font-bold sm:text-2xl mt-8">The modules</h2>
 
     <div className="flex flex-row gap-4">
-    <button onClick={() => navigate("/account")}> Account </button>
     <button onClick={() => navigate("/module/1")}> Module 1 </button>
     </div>
 
   <ol>
-    <li><strong>Contracting</strong> — name the actual question, and what "better" looks like.</li>
-    <li><strong>Self-knowledge</strong> — energy/dread audit, lifeline, workview/lifeview.</li>
-    <li><strong>Motivators &amp; Anchors</strong> — what you won't trade away (Schein) + strengths.</li>
-    <li><strong>Vision &amp; Odyssey Plans</strong> — three divergent 5-year futures.</li>
-    <li><strong>Current-state audit</strong> — a mini-360 + an honest read of where you are now.</li>
-    <li><strong>Gap analysis</strong> — current vs. target, crossed with feedback.</li>
-    <li><strong>Development plan</strong> — a few declared behaviors, with feedforward.</li>
-    <li><strong>Visibility &amp; influence</strong> — stakeholder map, sphere of influence.</li>
-    <li><strong>Decision-making under ambiguity</strong> — prototype conversations &amp; experiences.</li>
-    <li><strong>Sustainment &amp; energy</strong> — recovery design, early-warning signals, non-negotiables.</li>
-    <li><strong>Review &amp; re-contract</strong> — what evidence pivots vs. persists.</li>
+    <li><Link to="/module/1"><strong>Contracting</strong> — name the actual question, and what "better" looks like.</Link></li>
+    <li><Link to="/module/2"><strong>Self-knowledge</strong> — energy/dread audit, lifeline, workview/lifeview.</Link></li>
+    <li><Link to="/module/3"><strong>Motivators &amp; Anchors</strong> — what you won't trade away (Schein) + strengths.</Link></li>
+    <li><Link to="/module/4"><strong>Vision &amp; Odyssey Plans</strong> — three divergent 5-year futures.</Link></li>
+    <li><Link to="/module/5"><strong>Current-state audit</strong> — a mini-360 + an honest read of where you are now.</Link></li>
+    <li><Link to="/module/6"><strong>Gap analysis</strong> — current vs. target, crossed with feedback.</Link></li>
+    <li><Link to="/module/7"><strong>Development plan</strong> — a few declared behaviors, with feedforward.</Link></li>
+    <li><Link to="/module/8"><strong>Visibility &amp; influence</strong> — stakeholder map, sphere of influence.</Link></li>
+    <li><Link to="/module/9"><strong>Decision-making under ambiguity</strong> — prototype conversations &amp; experiences.</Link></li>
+    <li><Link to="/module/10"><strong>Sustainment &amp; energy</strong> — recovery design, early-warning signals, non-negotiables.</Link></li>
+    <li><Link to="/module/11"><strong>Review &amp; re-contract</strong> — what evidence pivots vs. persists.</Link></li>
   </ol>
 
   <p>
