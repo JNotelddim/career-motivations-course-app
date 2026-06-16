@@ -54,12 +54,34 @@ Set deadlines for yourself that work for you.
 (Future feature: scheduled reminders)
 
 ## Technical Setup
-- React, Vite, Tailwind
-  - User-specific content stored in localStorage only, because Sites db doens't have user-specific read security, and the content of the worksheets is likely to be personal information.
+- React via React-router 
+  - 🚀 Server-side rendering
+  - ⚡️ Hot Module Replacement (HMR)
+  - 📦 Asset bundling and optimization
+  - 🔄 Data loading and mutations
+  - 🔒 TypeScript by default
+  - 🎉 TailwindCSS for styling
+  - 📖 [React Router docs](https://reactrouter.com/)
 
 - Metalab Sites (2.0) https://sites.metalab.com/docs
   - Branch-driven auto deploy w/ GitHub
   - User Identities via Okta Auth
+  - User-specific content stored in localStorage only, because Sites db doens't have user-specific read security, and the content of the worksheets is likely to be personal information.
 
 ### Local Development
-`npm install` > `npm run dev`
+`npm install` > `npm run dev` : `http://localhost:5173`
+
+for deployment:
+`npm build` & merge to `main`
+
+
+### Docker Deployment (presently unused)
+
+To build and run using Docker:
+
+```bash
+docker build -t my-app .
+
+# Run the container
+docker run -p 3000:3000 my-app
+```
