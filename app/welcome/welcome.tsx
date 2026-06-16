@@ -28,6 +28,10 @@ export function Welcome() {
     <li><strong>Review &amp; re-contract</strong> — what evidence pivots vs. persists.</li>
   </ol>
 
+  <p>
+    UPDATED
+  </p>
+
     </main>
   );
 }
