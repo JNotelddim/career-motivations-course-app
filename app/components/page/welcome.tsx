@@ -17,6 +17,10 @@ export function Welcome() {
     A self-directed career-coaching workflow: a structured set of worksheets for
     answering "what actually drives me, and where am I going?" — filled in at your
     own pace. <br /> (Placeholder page — the real app is being built.)
+
+    <br />
+    Note that this is currently oriented towards Senior Engineers given the resources
+    and structure of questions.
   </p>
 
   <p className="text-left text-md sm:text-lg">Each person fills in their own private copy.<br />The framework ships empty; your answers stay yours.</p>
