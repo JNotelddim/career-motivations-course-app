@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router";
+
 export function Welcome() {
+  const navigate = useNavigate();
+
   return (
     <main className="flex flex-col items-start justify-center gap-4 p-8 max-w-3xl mx-auto">
 
@@ -13,6 +17,11 @@ export function Welcome() {
   <p className="text-left text-md sm:text-lg">Each person fills in their own private copy.<br />The framework ships empty; your answers stay yours.</p>
 
   <h2 className="text-xl font-bold sm:text-2xl mt-8">The modules</h2>
+
+    <div className="flex flex-row gap-4">
+    <button onClick={() => navigate("/account")}> Account </button>
+    <button onClick={() => navigate("/module/1")}> Module 1 </button>
+    </div>
 
   <ol>
     <li><strong>Contracting</strong> — name the actual question, and what "better" looks like.</li>
