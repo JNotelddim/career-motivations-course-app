@@ -1,196 +1,357 @@
+// ---- CONTENT model (static, committed, seeded here) ----
+// The user's *answers* are a separate (localStorage) concern — not modelled here yet. See .scratch/TASKS.md.
+
+type ResourceLink = {
+    title: string;
+    url?: string; // optional — books / internal docs may have no link
+    price?: string; // optional approx cost, e.g. "free", "~$25", "paid (book)"
+};
+
+// Fields common to every exercise, intersected with a per-kind variant.
+// `id` is a STABLE string (never positional) so saved responses survive content edits/reordering.
+type Exercise = {
+    id: string;
+    prompt: string;
+    guidance?: string; // the "question-specific prompt" — explanatory context distinct from the ask
+} & (
+    | { kind: "shortText" }
+    | { kind: "longText" }
+    | { kind: "scale"; min: number; max: number; minLabel?: string; maxLabel?: string }
+    | { kind: "matrix"; columns: { id: string; label: string }[]; rows: string[] } // fixed grid
+    | { kind: "rowList"; fields: { id: string; label: string }[] } // repeatable record rows (add/remove)
+);
+
+type Section = {
+    title: string;
+    description?: string;
+    exercises: Exercise[];
+};
+
 type WorksheetModule = {
     id: number;
     title: string;
     description: string;
-    resources: { title: string; url: string }[];
-    questions: { id: number; text: string }[]; // todo: additional prop: "savedResponse" ?
-}
+    prereqs: number[]; // module ids to complete first; [] = none
+    resources: ResourceLink[];
+    sections: Section[];
+};
+
+const SCHEIN_ANCHORS = [
+    "Technical / Functional Competence",
+    "General Managerial Competence",
+    "Autonomy / Independence",
+    "Security / Stability",
+    "Entrepreneurial Creativity",
+    "Service / Dedication to a Cause",
+    "Pure Challenge",
+    "Lifestyle",
+];
 
 const MODULE_1: WorksheetModule = {
     id: 1,
     title: "Contracting",
     description: "Name your questions and what 'ideal' looks like.",
+    prereqs: [],
     resources: [
-        { title: "ICF Core Competencies — Establishing the Coaching Agreement", url: "https://coachingfederation.org/credentialing/coaching-competencies/icf-core-competencies/" },
-        { title: "Designing Your Life (Burnett & Evans) — 'what problem are you really trying to solve?'", url: "http://lifedesignlab.stanford.edu/dyl" },
+        { title: "ICF Core Competencies — Establishing the Coaching Agreement", url: "https://coachingfederation.org/credentialing/coaching-competencies/icf-core-competencies/", price: "free" },
+        { title: "Designing Your Life (Burnett & Evans) — 'what problem are you really trying to solve?'", url: "http://lifedesignlab.stanford.edu/dyl", price: "free" },
     ],
-    questions: [
-        { id: 1, text: "The actual question — in one sentence: 'By the end of this curriculum, I want to be able to answer / decide / choose ___.'" },
-        { id: 2, text: "Success signal — in one sentence: 'I'll know this worked when ___.'" },
-        { id: 3, text: "What I'm avoiding — one sentence on the question I'm circling but not naming (e.g. IC-vs-management, depth-vs-breadth, stay-vs-pivot)." },
-        { id: 4, text: "Re-contract trigger — at what point would I revisit and re-write this contract?" },
+    sections: [
+        {
+            title: "The contract",
+            exercises: [
+                { id: "m01-question", kind: "shortText", prompt: "By the end of this curriculum, I want to be able to answer / decide / choose ___.", guidance: "One sentence — the actual question you're trying to answer." },
+                { id: "m01-success", kind: "shortText", prompt: "I'll know this worked when ___.", guidance: "One sentence — your success signal." },
+                { id: "m01-avoiding", kind: "shortText", prompt: "The question I'm circling but not naming is ___.", guidance: "Honest version: the IC-vs-management, depth-vs-breadth, or stay-vs-pivot question — or something else." },
+                { id: "m01-retrigger", kind: "longText", prompt: "At what point would I revisit and re-write this contract?", guidance: "Name the trigger and any review cadence." },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_2: WorksheetModule = {
     id: 2,
     title: "Self-knowledge",
     description: "Energy/dread audit, lifeline, workview/lifeview.",
+    prereqs: [],
     resources: [
-        { title: "Designing Your Life — Workview & Lifeview essays", url: "http://lifedesignlab.stanford.edu/dyl" },
-        { title: "Designing Your Life — Energy / Engagement / Flow audit ('Good Time Journal')", url: "http://lifedesignlab.stanford.edu/dyl" },
+        { title: "Designing Your Life — Workview & Lifeview essays", url: "http://lifedesignlab.stanford.edu/dyl", price: "free" },
+        { title: "Designing Your Life — Energy / Engagement / Flow audit ('Good Time Journal')", url: "http://lifedesignlab.stanford.edu/dyl", price: "free" },
     ],
-    questions: [
-        { id: 1, text: "Workview essay (250–500 words): what is work for?" },
-        { id: 2, text: "Lifeview essay (250–500 words): what is life for?" },
-        { id: 3, text: "Coherence check: where do your workview and lifeview reinforce each other, and where do they contradict?" },
-        { id: 4, text: "2-week energy audit: a quick daily note of high-energy and low-energy moments at work. What pattern surfaces after two weeks?" },
-        { id: 5, text: "Lifeline: map career peaks and valleys on a timeline, and annotate what made the peaks peaks." },
+    sections: [
+        {
+            title: "Workview & Lifeview",
+            exercises: [
+                { id: "m02-workview", kind: "longText", prompt: "What is work for?", guidance: "250–500 words." },
+                { id: "m02-lifeview", kind: "longText", prompt: "What is life for?", guidance: "250–500 words. Write independently of the workview, then compare." },
+                { id: "m02-coherence", kind: "longText", prompt: "Where do your workview and lifeview reinforce each other, and where do they contradict?" },
+            ],
+        },
+        {
+            title: "Energy & history",
+            exercises: [
+                { id: "m02-energy", kind: "longText", prompt: "2-week energy audit: what pattern surfaces from your daily high-energy and low-energy moments at work?", guidance: "A quick daily note for two weeks; the pattern is the output." },
+                { id: "m02-lifeline", kind: "longText", prompt: "Lifeline: map your career peaks and valleys, and annotate what made the peaks peaks." },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_3: WorksheetModule = {
     id: 3,
     title: "Motivators & Anchors",
     description: "Schein anchors forced-rank + a strengths inventory — name what you'd refuse to trade away.",
+    prereqs: [],
     resources: [
-        { title: "CliftonStrengths (Gallup) — 34 themes, top-5 ranking", url: "https://www.gallup.com/cliftonstrengths" },
-        { title: "VIA Character Strengths — 24 strengths, free", url: "https://www.viacharacter.org/" },
-        { title: "Reiss Motivation Profile — 16 basic desires (optional, tier-2)", url: "https://www.reissmotivationprofile.com/" },
+        { title: "Schein — Career Anchors (self-administration workbook, Wiley)", price: "~$25" },
+        { title: "CliftonStrengths (Gallup) — 34 themes, top-5 ranking", url: "https://www.gallup.com/cliftonstrengths", price: "~$25–60" },
+        { title: "VIA Character Strengths — 24 strengths", url: "https://www.viacharacter.org/", price: "free" },
+        { title: "Reiss Motivation Profile — 16 basic desires (optional, tier-2)", url: "https://www.reissmotivationprofile.com/", price: "~$200" },
     ],
-    questions: [
-        { id: 1, text: "Gut reactions: for each of Schein's 8 anchors, a one-line gut reaction — does it resonate, partially, or barely? No ranking yet, just calibration." },
-        { id: 2, text: "Forced ranking: rank all 8 anchors from most (1) to least (8). No ties — the discomfort of differentiating adjacent ranks is the exercise." },
-        { id: 3, text: "Top-2 defense: for each of your top 2 anchors, defend it against the next 2 ranks — the past decision/pattern that demonstrates it, the strongest counterargument, and why it still wins." },
-        { id: 4, text: "Current role vs. top 4 anchors: does the role serve, neglect, or actively contradict each? Where does misalignment surface?" },
-        { id: 5, text: "Anchor evidence from real decisions: pick 2–3 real career-shaping decisions and label which anchor(s) drove each. Do the inferred anchors match the ranking you just produced?" },
-        { id: 6, text: "Strengths inventory: record your top results (CliftonStrengths or VIA). Which top strength is the role underusing? Which is it leveraging?" },
-        { id: 7, text: "Synthesis: a one-sentence motivator statement, your non-negotiables, and the biggest surprise this exercise surfaced." },
-        { id: 8, text: "(Optional differentiation aids, if ranking feels impossible) Paired comparison of all 28 pairs, 100-point allocation, sacrifice scenarios, or the official Schein Career Orientations Inventory." },
+    sections: [
+        {
+            title: "Calibration",
+            exercises: [
+                { id: "m03-gut", kind: "matrix", prompt: "For each of Schein's 8 anchors, a one-line gut reaction: does it resonate, partially, or barely?", guidance: "No ranking yet — just calibration.", rows: SCHEIN_ANCHORS, columns: [{ id: "reaction", label: "Gut reaction (1 line)" }] },
+            ],
+        },
+        {
+            title: "Differentiation aids (optional)",
+            description: "Use only if forced ranking feels impossible — surface cost through paired comparison, 100-point allocation, sacrifice scenarios, or the official Schein Career Orientations Inventory.",
+            exercises: [
+                { id: "m03-aids", kind: "longText", prompt: "Work through whichever differentiation aid(s) you need, and capture the result.", guidance: "Most decisive is the official COI; paired comparison (28 pairs) is the most thorough by hand. (A richer structured control for these is a future refinement.)" },
+            ],
+        },
+        {
+            title: "Ranking & defense",
+            exercises: [
+                { id: "m03-ranking", kind: "matrix", prompt: "Forced ranking: rank all 8 anchors from most (1) to least (8).", guidance: "No ties — the discomfort of differentiating adjacent ranks is the exercise.", rows: SCHEIN_ANCHORS, columns: [{ id: "rank", label: "Rank (1 = most, 8 = least)" }] },
+                { id: "m03-defense", kind: "longText", prompt: "Top-2 defense: for each of your top 2 anchors, defend it against the next 2 ranks.", guidance: "The shape: 'I rank X above Y because [past decision/pattern]. The strongest counterargument is [Z], but [why X still wins].'" },
+            ],
+        },
+        {
+            title: "Alignment & evidence",
+            exercises: [
+                { id: "m03-role-fit", kind: "longText", prompt: "Current role vs. your top 4 anchors: for each, does the role serve, neglect, or actively contradict it? Cite evidence." },
+                { id: "m03-decisions", kind: "rowList", prompt: "Anchor evidence from real decisions: label which anchor(s) drove each, and whether it matches your ranking.", guidance: "Anchors are inferred from pattern, not self-reported.", fields: [{ id: "decision", label: "Decision" }, { id: "year", label: "Year" }, { id: "anchors", label: "Anchor(s) that drove it" }, { id: "mismatch", label: "Mismatch with ranking?" }] },
+            ],
+        },
+        {
+            title: "Strengths & synthesis",
+            exercises: [
+                { id: "m03-strengths", kind: "longText", prompt: "Record your top strengths (CliftonStrengths or VIA). Which top strength is the role underusing? Which is it leveraging?" },
+                { id: "m03-synthesis", kind: "longText", prompt: "Synthesis: a one-sentence motivator statement, your non-negotiables, and the biggest surprise this surfaced." },
+            ],
+        },
     ],
-}
+};
+
+const planExercises = (plan: "a" | "b" | "c") => [
+    { id: `m04-${plan}-headline`, kind: "shortText" as const, prompt: "Headline — six words for this plan." },
+    { id: `m04-${plan}-week`, kind: "longText" as const, prompt: "A typical week: 4–6 bullets — what's in the calendar, what am I making, who am I talking to?" },
+    { id: `m04-${plan}-archetype`, kind: "shortText" as const, prompt: "Which Staff Engineer archetype (or manager-track equivalent) best describes this plan?" },
+    { id: `m04-${plan}-gained`, kind: "longText" as const, prompt: "What gets gained." },
+    { id: `m04-${plan}-lost`, kind: "longText" as const, prompt: "What gets lost / given up." },
+    { id: `m04-${plan}-openqs`, kind: "longText" as const, prompt: "Three open questions — what would I need to learn, test, or find out to know if this plan is real?" },
+    { id: `m04-${plan}-gauge`, kind: "matrix" as const, prompt: "Gauge this plan (1–10 each).", guidance: "High = more favorable.", rows: ["Confidence", "Resources required", "Like factor", "Coherence with top anchors"], columns: [{ id: "score", label: "Score (1–10)" }] },
+];
 
 const MODULE_4: WorksheetModule = {
     id: 4,
     title: "Vision & Odyssey Plans",
     description: "Three divergent 5-year futures (Designing Your Life Odyssey Plans).",
+    prereqs: [2, 3],
     resources: [
-        { title: "Designing Your Life — Odyssey Plans", url: "http://lifedesignlab.stanford.edu/dyl" },
-        { title: "Tanya Reilly — The Staff Engineer's Path (archetype labels)", url: "https://www.oreilly.com/library/view/the-staff-engineers/9781098118723/" },
+        { title: "Designing Your Life — Odyssey Plans", url: "http://lifedesignlab.stanford.edu/dyl", price: "free" },
+        { title: "Tanya Reilly — The Staff Engineer's Path (archetype labels)", url: "https://www.oreilly.com/library/view/the-staff-engineers/9781098118723/", price: "paid (book)" },
+        { title: "Camille Fournier — The Manager's Path (manager-track futures)", price: "paid (book)" },
     ],
-    questions: [
-        { id: 1, text: "Draft three 5-year plans — Plan A (current trajectory, with intent), Plan B (credible adjacent pivot), Plan C (wild variant, if money/title/obligations were solved). Complete the prompts below for each." },
-        { id: 2, text: "Headline — six words for the plan." },
-        { id: 3, text: "A typical week — 4–6 bullets: what's in the calendar, what am I making, who am I talking to?" },
-        { id: 4, text: "Staff Engineer archetype (or manager-track equivalent) — which best describes this plan?" },
-        { id: 5, text: "What gets gained." },
-        { id: 6, text: "What gets lost / given up." },
-        { id: 7, text: "Three open questions — what would I need to learn, test, or find out to know if this plan is real?" },
-        { id: 8, text: "Gauge (1–10 each): confidence, resources required, like factor, and coherence with your top anchors." },
-        { id: 9, text: "Cross-plan synthesis: the common threads across all three, the surprises, and which plan's open questions are most worth chasing first." },
+    sections: [
+        { title: "Plan A — Current trajectory", description: "What if I keep doing what I'm doing, but with intent?", exercises: planExercises("a") },
+        { title: "Plan B — Credible adjacent pivot", description: "What if the role / shape / specialty shifts in a plausible way?", exercises: planExercises("b") },
+        { title: "Plan C — Wild variant", description: "What if money / title / current obligations were solved?", exercises: planExercises("c") },
+        {
+            title: "Cross-plan synthesis",
+            exercises: [
+                { id: "m04-synthesis", kind: "longText", prompt: "Across all three plans: the common threads, the surprises, and which plan's open questions are most worth chasing first." },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_5: WorksheetModule = {
     id: 5,
     title: "Current-state audit",
     description: "A mini-360 + senior-IC archetype check on how the role actually works today.",
+    prereqs: [3],
     resources: [
-        { title: "Marshall Goldsmith — Stakeholder-Centered Coaching", url: "https://www.marshallgoldsmith.com/" },
-        { title: "Lara Hogan — 'What kind of manager / lead are you?' templates", url: "https://larahogan.me/" },
+        { title: "Marshall Goldsmith — Stakeholder-Centered Coaching", url: "https://www.marshallgoldsmith.com/", price: "free" },
+        { title: "Lara Hogan — 'What kind of manager / lead are you?' templates", url: "https://larahogan.me/", price: "free" },
     ],
-    questions: [
-        { id: 1, text: "Self-audit against the senior-IC archetypes (Tech Lead / Architect / Solver / Right Hand): for the last 4–8 weeks, what % of your work fell into each? Does that match the role's intended shape?" },
-        { id: 2, text: "Mini-360: ask 3–5 trusted stakeholders the five Goldsmith questions — what should I keep doing? start doing? stop doing? where am I underusing a strength? and what do you think actually motivates me?" },
-        { id: 3, text: "Reconcile: read all responses side-by-side. What's said by two or more people is signal; what only one person says is information, not conclusion." },
-        { id: 4, text: "Mismatch map: where do your anchors (Module 03), self-audit, and stakeholder responses diverge? The divergence is the reflection." },
+    sections: [
+        {
+            title: "Self-audit",
+            exercises: [
+                { id: "m05-archetype", kind: "matrix", prompt: "For the last 4–8 weeks, what % of your work fell into each senior-IC archetype? Does that match the role's intended shape?", rows: ["Tech Lead", "Architect", "Solver", "Right Hand"], columns: [{ id: "pct", label: "Est. %" }, { id: "examples", label: "Examples" }] },
+            ],
+        },
+        {
+            title: "Mini-360",
+            description: "Ask 3–5 trusted stakeholders the five Goldsmith questions. Add a row per stakeholder.",
+            exercises: [
+                { id: "m05-stakeholders", kind: "rowList", prompt: "Stakeholder responses.", fields: [{ id: "who", label: "Stakeholder & relationship" }, { id: "keep", label: "Keep doing" }, { id: "start", label: "Start doing" }, { id: "stop", label: "Stop doing" }, { id: "underused", label: "Underused strength" }, { id: "motivates", label: "What actually motivates me" }] },
+            ],
+        },
+        {
+            title: "Reconcile",
+            exercises: [
+                { id: "m05-reconcile", kind: "longText", prompt: "Read all responses side-by-side. What's said by 2+ people (signal)? What did only one person say (information, not conclusion)?" },
+                { id: "m05-mismatch", kind: "longText", prompt: "Mismatch map: where do your anchors (Module 03), self-audit, and stakeholder responses diverge? The divergence is the reflection." },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_6: WorksheetModule = {
     id: 6,
     title: "Gap analysis",
     description: "Cross a competency model with your 360 + self-rating to pick 2–3 focus areas.",
+    prereqs: [3, 4, 5],
     resources: [
-        { title: "progression.fyi — public-company engineering ladders", url: "https://www.progression.fyi/" },
+        { title: "progression.fyi — public-company engineering ladders", url: "https://www.progression.fyi/", price: "free" },
+        { title: "Metalab Lead engineering ladder (internal docs)" },
     ],
-    questions: [
-        { id: 1, text: "Pick the reference ladder: your current role's official ladder, or the closest published equivalent for an Odyssey target role." },
-        { id: 2, text: "Self-rate against the ladder: for each competency, below / at / above expected." },
-        { id: 3, text: "Layer in the 360 (Module 05): where do stakeholders disagree with your self-rating?" },
-        { id: 4, text: "Layer in anchors (Module 03): which competency gaps actually matter given your top anchors, and which are real but irrelevant to where you want to go?" },
-        { id: 5, text: "Trio selection: choose 2–3 competencies that have a real gap (self + 360 agree), matter (anchors + Odyssey say so), and are developable in the next 6–12 months." },
+    sections: [
+        {
+            title: "Gap analysis",
+            exercises: [
+                { id: "m06-ladder", kind: "shortText", prompt: "Reference ladder chosen — and why this one?", guidance: "Your current role's official ladder, or the closest published equivalent for an Odyssey target role." },
+                { id: "m06-selfrate", kind: "rowList", prompt: "Self-rate against the ladder, then reconcile with the 360. Add a row per competency.", fields: [{ id: "competency", label: "Competency" }, { id: "self", label: "Self-rating (below / at / above)" }, { id: "view360", label: "360 view" }, { id: "agreement", label: "Agreement / divergence" }] },
+                { id: "m06-filter", kind: "rowList", prompt: "For each gap, does it actually matter given your anchors and target plan?", fields: [{ id: "gap", label: "Competency gap" }, { id: "anchor", label: "Anchor relevance" }, { id: "odyssey", label: "Odyssey relevance" }, { id: "matters", label: "Matters?" }] },
+                { id: "m06-trio", kind: "longText", prompt: "The trio: 2–3 competencies with a real gap (self + 360 agree), that matter (anchors + Odyssey), and are developable in 6–12 months. For each, why it matters and what 'developed' looks like." },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_7: WorksheetModule = {
     id: 7,
     title: "Development plan",
     description: "Turn focus competencies into 1–2 declared behaviors, with feedforward (Goldsmith).",
+    prereqs: [6],
     resources: [
-        { title: "Marshall Goldsmith — Stakeholder-Centered Coaching, the 9 steps", url: "https://knowledgebank.mgscc.net/9-steps-in-marshall-goldsmiths-coaching-process/" },
+        { title: "Marshall Goldsmith — Stakeholder-Centered Coaching, the 9 steps", url: "https://knowledgebank.mgscc.net/9-steps-in-marshall-goldsmiths-coaching-process/", price: "free" },
     ],
-    questions: [
-        { id: 1, text: "Translate competency to behavior: competency is the what (e.g. 'strategic communication'); behavior is the act (e.g. 'open every status update with one sentence on stakeholder impact'). Specific, observable, addressable." },
-        { id: 2, text: "Pick 1–2 behaviors total — not one per competency. The trio gets served by 1–2 behaviors." },
-        { id: 3, text: "Declare to 3–5 stakeholders: 'I'm working on becoming better at X. Could you tell me 1–2 things I could do differently next time?'" },
-        { id: 4, text: "Monthly check-ins (2–5 min per stakeholder): how am I doing on X? what's one thing for next month?" },
-        { id: 5, text: "Daily self-questions: end of day, rate yourself 1–10 on 'did I do my best to ___ today?' for each behavior. Trend matters, not score." },
-        { id: 6, text: "5-month and 11-month mini-surveys with the stakeholder set." },
+    sections: [
+        {
+            title: "Behaviors",
+            exercises: [
+                { id: "m07-translate", kind: "rowList", prompt: "Translate each focus competency into an observable behavior.", guidance: "Competency is the what ('strategic communication'); behavior is the act ('open every status update with one sentence on stakeholder impact').", fields: [{ id: "competency", label: "Competency (from M06)" }, { id: "behavior", label: "Behavior (what I'll do)" }, { id: "observable", label: "Observable by whom" }] },
+                { id: "m07-selected", kind: "longText", prompt: "Pick 1–2 behaviors total (not one per competency). For each: why it serves the trio, the trigger/context, and what doing it well looks like." },
+            ],
+        },
+        {
+            title: "Declare & track",
+            exercises: [
+                { id: "m07-declare", kind: "rowList", prompt: "Declare to 3–5 stakeholders: 'I'm working on becoming better at X. Could you tell me 1–2 things I could do differently next time?'", fields: [{ id: "stakeholder", label: "Stakeholder" }, { id: "declaredOn", label: "Declared on" }, { id: "notes", label: "Notes" }] },
+                { id: "m07-checkins", kind: "rowList", prompt: "Monthly check-ins (2–5 min each): how am I doing on X, and what's one thing for next month?", fields: [{ id: "month", label: "Month" }, { id: "stakeholder", label: "Stakeholder" }, { id: "howdoing", label: "How am I doing?" }, { id: "onething", label: "One thing for next month" }] },
+                { id: "m07-daily", kind: "longText", prompt: "Daily self-rating trend: end of day, rate yourself 1–10 on 'did I do my best to ___ today?' for each behavior. Summarize the trend (not the score).", guidance: "Trend matters, not score." },
+                { id: "m07-surveys", kind: "rowList", prompt: "5-month and 11-month mini-surveys with the stakeholder set.", fields: [{ id: "month", label: "Month (5 / 11)" }, { id: "stakeholder", label: "Stakeholder" }, { id: "improvement", label: "Improvement noticed? (1–5)" }, { id: "specifics", label: "Specifics" }] },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_8: WorksheetModule = {
     id: 8,
     title: "Visibility & influence",
     description: "Map stakeholders, sphere of influence, and your manager-Voltron.",
+    prereqs: [],
     resources: [
-        { title: "Lara Hogan — Manager Voltron", url: "https://larahogan.me/voltron/" },
+        { title: "Lara Hogan — Manager Voltron", url: "https://larahogan.me/voltron/", price: "free" },
+        { title: "Lara Hogan — Sphere of influence / control / concern", url: "https://larahogan.me/", price: "free" },
     ],
-    questions: [
-        { id: 1, text: "Stakeholder map: list everyone who is a buyer, blocker, beneficiary, or boss-of-boss for your next 6 months of work. Rate each on importance (H/M/L) and current relationship strength (H/M/L). Which 2–3 relationships are most worth investing in next quarter?" },
-        { id: 2, text: "Manager-Voltron audit: who are your 3–5 cross-functional peers you can call when something's strange? Where are the gaps?" },
-        { id: 3, text: "Sphere mapping: for each current concern, is it in your sphere of control, influence, or concern (can't act on)? What will you stop spending energy on?" },
-        { id: 4, text: "Radiating intent: for your top 2 in-flight pieces of work, who needs to know what's happening before they hear it from someone else — and when/how?" },
+    sections: [
+        {
+            title: "Visibility & influence",
+            exercises: [
+                { id: "m08-stakeholdermap", kind: "rowList", prompt: "Stakeholder map: everyone who is a buyer, blocker, beneficiary, or boss-of-boss for your next 6 months.", fields: [{ id: "person", label: "Person" }, { id: "role", label: "Role" }, { id: "importance", label: "Importance (H/M/L)" }, { id: "relationship", label: "Relationship (H/M/L)" }, { id: "gap", label: "Gap to close" }] },
+                { id: "m08-voltron", kind: "rowList", prompt: "Manager-Voltron audit: your 3–5 cross-functional peers you can call when something's strange. Where are the gaps?", fields: [{ id: "person", label: "Person" }, { id: "function", label: "Function" }, { id: "lastWent", label: "When did I last go to them?" }, { id: "gap", label: "Gap?" }] },
+                { id: "m08-spheres", kind: "rowList", prompt: "Sphere mapping: for each current concern, is it in your sphere of control, influence, or concern (can't act on)?", guidance: "Stop spending energy on sphere-of-concern items.", fields: [{ id: "concern", label: "Concern" }, { id: "sphere", label: "Sphere (control / influence / concern)" }, { id: "action", label: "Action or release" }] },
+                { id: "m08-intent", kind: "rowList", prompt: "Radiating intent: for your top in-flight work, who needs to know what's happening before they hear it elsewhere?", fields: [{ id: "work", label: "In-flight work" }, { id: "who", label: "Who needs to know" }, { id: "what", label: "What they need to know" }, { id: "when", label: "When / how" }] },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_9: WorksheetModule = {
     id: 9,
     title: "Decision-making under ambiguity",
     description: "Shrink big career questions into the smallest belief-updating experiments.",
+    prereqs: [4],
     resources: [
-        { title: "Designing Your Life — Prototype Conversations & Prototype Experiences", url: "http://lifedesignlab.stanford.edu/dyl" },
+        { title: "Designing Your Life — Prototype Conversations & Prototype Experiences", url: "http://lifedesignlab.stanford.edu/dyl", price: "free" },
+        { title: "Annie Duke — Thinking in Bets / How to Decide", price: "paid (book)" },
     ],
-    questions: [
-        { id: 1, text: "Inventory the open questions: pull every open question from your three Odyssey Plans, plus any career-shaped questions hovering in the background." },
-        { id: 2, text: "Categorize each: Type 1 (irreversible) or Type 2 (reversible). Most are Type 2 even when they feel like Type 1." },
-        { id: 3, text: "For each Type 2 question, design a prototype — a conversation (who has done this thing? what 3 questions would update your belief?) or an experience (the smallest embedded version you could do in 2–8 weeks)." },
-        { id: 4, text: "Schedule the first two prototypes: two specific dates, two specific people or experiments. The exercise is worthless without this step." },
-        { id: 5, text: "Decision criteria: before running the prototypes, write down what evidence would change your mind. Pre-committed criteria resist post-hoc rationalization." },
+    sections: [
+        {
+            title: "Decision-making",
+            exercises: [
+                { id: "m09-inventory", kind: "rowList", prompt: "Inventory the open questions: pull every open question from your three Odyssey Plans, plus any hovering in the background.", fields: [{ id: "question", label: "Question" }, { id: "origin", label: "Origin (module / Odyssey plan)" }] },
+                { id: "m09-categorize", kind: "rowList", prompt: "Categorize each: Type 1 (irreversible) or Type 2 (reversible). Most are Type 2 even when they feel like Type 1.", fields: [{ id: "question", label: "Question" }, { id: "type", label: "Type (1 / 2)" }, { id: "reasoning", label: "Reasoning" }] },
+                { id: "m09-prototypes", kind: "rowList", prompt: "For each Type 2 question, design a prototype conversation or experience.", guidance: "Conversation: who's done it + 3 belief-updating questions. Experience: the smallest embedded version (2–8 weeks).", fields: [{ id: "question", label: "Question" }, { id: "conversation", label: "Conversation (who, 3 questions)" }, { id: "experience", label: "Experience (smallest version)" }] },
+                { id: "m09-schedule", kind: "longText", prompt: "Schedule the first two prototypes: two specific dates, two specific people/experiments, and — before running them — what evidence would change your mind.", guidance: "Pre-committed criteria resist post-hoc rationalization. The exercise is worthless without scheduling." },
+                { id: "m09-results", kind: "rowList", prompt: "Prototype results (fill in after each).", fields: [{ id: "prototype", label: "Prototype" }, { id: "date", label: "Date run" }, { id: "before", label: "Belief before" }, { id: "after", label: "Belief after" }, { id: "decision", label: "Decision" }] },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_10: WorksheetModule = {
     id: 10,
     title: "Sustainment & energy",
     description: "Design recovery, early-warning signals, and non-negotiables to sustain the plan.",
+    prereqs: [],
     resources: [
-        { title: "Lara Hogan — Resilience funding & energy stewardship", url: "https://larahogan.me/" },
+        { title: "Lara Hogan — Resilience funding & energy stewardship", url: "https://larahogan.me/", price: "free" },
+        { title: "Demand-Resource model (Bakker & Demerouti) — burnout as chronic demand/resource gap" },
     ],
-    questions: [
-        { id: 1, text: "Early-warning signal library: what does your depletion look like, specifically (sleep, irritability, code quality, communication, what you dread)? Be precise — vague signals don't catch in time." },
-        { id: 2, text: "Recovery design: what actually restores you, and how much / how often? Distinguish passive rest from active recovery (activities that put energy back)." },
-        { id: 3, text: "Non-negotiables: the 2–3 things that, if you drop them, you're not OK (likely a mix of physical, relational, creative)." },
-        { id: 4, text: "Resource map (Demand-Resource model): for the current role, list the high-demand axes and the resources (autonomy / support / recovery) that offset them. Which resources are thin?" },
-        { id: 5, text: "Recovery agreements: things you commit to — and to whom — that protect the non-negotiables, including with yourself." },
+    sections: [
+        {
+            title: "Sustainment & energy",
+            exercises: [
+                { id: "m10-signals", kind: "rowList", prompt: "Early-warning signal library: what does your depletion look like, specifically?", guidance: "Sleep, irritability, code quality, communication, what you dread — be precise; vague signals don't catch in time.", fields: [{ id: "signal", label: "Signal" }, { id: "looksLike", label: "What it specifically looks like" }, { id: "action", label: "At this point I should…" }] },
+                { id: "m10-recovery", kind: "rowList", prompt: "Recovery design: what restores you, and how much / how often?", guidance: "Distinguish passive rest from active recovery (activities that put energy back).", fields: [{ id: "activity", label: "Restorative activity" }, { id: "type", label: "Type (passive / active)" }, { id: "cadence", label: "Cadence required" }, { id: "doing", label: "Currently doing?" }] },
+                { id: "m10-nonneg", kind: "longText", prompt: "Non-negotiables: the 2–3 things that, if you drop them, you're not OK. Last time you dropped one, what happened?" },
+                { id: "m10-resourcemap", kind: "rowList", prompt: "Resource map (Demand-Resource): the high-demand axes of the current role, and the resources that offset them.", fields: [{ id: "demand", label: "High-demand axis" }, { id: "resource", label: "Available resource (autonomy / support / recovery)" }, { id: "gap", label: "Resource gap?" }] },
+                { id: "m10-agreements", kind: "rowList", prompt: "Recovery agreements: things you commit to — and to whom — that protect the non-negotiables.", fields: [{ id: "agreement", label: "Agreement" }, { id: "withWhom", label: "With whom" }, { id: "cadence", label: "Review cadence" }] },
+            ],
+        },
     ],
-}
+};
 
 const MODULE_11: WorksheetModule = {
     id: 11,
     title: "Review & re-contract",
     description: "Review the arc against your contract — what evidence pivots vs. persists?",
+    prereqs: [1],
     resources: [
-        { title: "ICF Core Competencies — Evaluating Progress & Concluding the Coaching Process", url: "https://coachingfederation.org/credentialing/coaching-competencies/icf-core-competencies/" },
+        { title: "ICF Core Competencies — Evaluating Progress & Concluding the Coaching Process", url: "https://coachingfederation.org/credentialing/coaching-competencies/icf-core-competencies/", price: "free" },
+        { title: "Annie Duke — Quit (when to walk away)", price: "paid (book)" },
     ],
-    questions: [
-        { id: 1, text: "Re-read your Module 01 contract: is the question still the right question? Has the success signal happened, partially happened, or shifted?" },
-        { id: 2, text: "Walk the arc: for each completed module, write one line on the actual output and whether it's holding up." },
-        { id: 3, text: "Persist or pivot, per focus area: for each focus competency (Module 06) and behavior (Module 07) — persist, pivot, or quit?" },
-        { id: 4, text: "Re-contract: re-write your Module 01 contract with current understanding. Date it; archive the old one." },
+    sections: [
+        {
+            title: "Review pass",
+            description: "Add a new dated entry for each review pass — quarterly (lightweight) or annual / major inflection (full pass incl. re-contract).",
+            exercises: [
+                { id: "m11-contract", kind: "longText", prompt: "Re-read your Module 01 contract: is the question still right? Has the success signal happened, partially happened, or shifted?" },
+                { id: "m11-arc", kind: "rowList", prompt: "Walk the arc: for each completed module, one line on the actual output and whether it's holding up.", fields: [{ id: "module", label: "Module" }, { id: "output", label: "Output" }, { id: "holding", label: "Holding up?" }, { id: "notes", label: "Notes" }] },
+                { id: "m11-persist", kind: "rowList", prompt: "Persist / pivot / quit, per focus area (each competency from M06 and behavior from M07).", fields: [{ id: "focus", label: "Focus area" }, { id: "verdict", label: "Persist / Pivot / Quit" }, { id: "why", label: "Why" }] },
+                { id: "m11-recontract", kind: "longText", prompt: "(Full pass only) Re-write your Module 01 contract with current understanding — question, success signal, avoidance, re-contract trigger. Date it; archive the old one." },
+            ],
+        },
     ],
-}
+};
 
 export const MODULES = [
     MODULE_1,
