@@ -75,7 +75,10 @@ for deployment:
 `npm build` & merge to `main`
 
 
-### Docker Deployment (presently unused)
+### Metalab Sites Deployment
+  - automatic branch-based (`main`) deployment via GitHub repo of the `dist/*` contents.
+
+### Docker (presently unused)
 
 To build and run using Docker:
 
