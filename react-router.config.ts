@@ -4,6 +4,7 @@ export default {
   // Config options...
   // Server-side render by default, to enable SPA mode set this to `false`
   ssr: false,
+  basename: "/jared/career-motivations-worksheet/",
   future: {
     v8_middleware: true,
     v8_passThroughRequests: true,
