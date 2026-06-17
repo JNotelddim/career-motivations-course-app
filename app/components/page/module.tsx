@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router";
 import { Button } from "../base/button";
 import { MODULES } from "~/consts/modules";
 import { useEffect } from "react";
+import { ROUTES } from "~/consts/routes";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
@@ -38,7 +39,7 @@ export function Module() {
     useEffect(() => {
       if (isNaN(moduleId) || moduleId < firstModuleId || moduleId > lastModuleId || moduleId > MODULES.length) {
           console.error(`Invalid moduleId: ${moduleId}`);
-          navigate('/'); // TODO: consider a dedicated "not found" page instead of redirecting to home
+          navigate(ROUTES.home); // TODO: consider a dedicated "not found" page instead of redirecting to home
       }
     }, [moduleId])
 
@@ -46,8 +47,8 @@ export function Module() {
     <main className="flex flex-col items-start justify-center gap-4 p-8 max-w-3xl mx-auto">
     
     <div className="w-full flex justify-between mb-8">
-        <Button onClick={() => navigate('/')}>🏠 Home </Button>
-        <Button onClick={() => navigate('/account')}>Account 👤</Button>
+        <Button onClick={() => navigate(ROUTES.home)}>🏠 Home </Button>
+        <Button onClick={() => navigate(ROUTES.account)}>Account 👤</Button>
     </div>
 
     <h1 className="text-2xl font-bold sm:text-3xl">Module {moduleId}: {title} </h1>
