@@ -87,6 +87,31 @@ npx serve build/client     # then open the printed localhost URL
 > directly makes the router match no route and render the 404 page (plus a hydration mismatch in the prod build).
 
 
+### Local identity — mock Sites SDK (dev only)
+
+Real Okta identity **can't resolve on localhost** — the Sites SDK script (`/sdk/v1/sites.js`) is served from the
+platform root (404s locally) and the Okta session cookie is scoped to the deployed domain (won't travel to a
+`localhost` origin). So local dev uses a **fabricated identity mock** in place of the real SDK.
+
+- **What it does:** `app/components/dev/devIdentityMock.tsx` injects a wire-faithful `window.sites` (matching the
+  real `{ _v, email, display_name, tenant }` contract), so the real auth provider runs unchanged against fake data.
+- **Select the identity state** with `VITE_DEV_IDENTITY` (default `authenticated`):
+
+  | Value | Behaviour |
+  |---|---|
+  | `authenticated` | resolves a mock viewer ("Jared Test") |
+  | `guest` | resolves `null` → app redirects to `/unauthenticated` |
+  | `sdk-unavailable` | doesn't attach `window.sites` → provider poll times out → error state |
+
+  ```bash
+  VITE_DEV_IDENTITY=guest npm run dev   # env is inlined at startup → restart the dev server to change it
+  ```
+- **Visible when active:** a maroon "MOCK IDENTITY ACTIVE" banner pins to the bottom of every page in dev.
+- **Why it can't ship:** the mock is fabricated data only (no real credential), and its injection is gated by
+  `import.meta.env.DEV`, so it's dead-code-eliminated from production builds. `scripts/check-no-dev-mock.mjs` runs in
+  `postbuild` and **fails the build** if the `__DEV_IDENTITY_MOCK__` sentinel ever survives into `build/client`.
+
+
 ### Metalab Sites Deployment
 
 Deploying via the **Sites CLI** (terminal publish) — *not* GitHub branch auto-deploy.

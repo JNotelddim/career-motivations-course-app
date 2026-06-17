@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router";
 import { Button, Link } from "../base";
+import { ROUTES } from "~/consts/routes";
 
 export function Welcome() {
   const navigate = useNavigate();
 
   return (
     <main className="flex flex-col items-start justify-center gap-4 p-8 max-w-3xl mx-auto">
-
     <div className="flex w-full flex-row-reverse">
-      <Button onClick={() => navigate('/account')}> Account 👤</Button>
+      <Button onClick={() => navigate(ROUTES.account)}> Account 👤</Button>
     </div>
 
     <h1 className="text-2xl font-bold sm:text-3xl">Career Self-Reflection & Motivations App</h1>

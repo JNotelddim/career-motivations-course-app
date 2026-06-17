@@ -8,6 +8,8 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { AuthProvider } from "./components/providers/authProvider";
+import { DevIdentityMock } from "./components/dev/devIdentityMock";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -31,6 +33,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        {/* Real Sites SDK loader — prod only. On localhost this path 404s and
+            can't carry the Okta session cookie anyway, so local dev relies on
+            <DevIdentityMock /> (rendered in App) to provide window.sites. */}
+        {!import.meta.env.DEV && <script src="/sdk/v1/sites.js"></script>}
       </head>
       <body>
         {children}
@@ -42,7 +48,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      {/* Outside AuthProvider on purpose: the provider renders a loading gate
+          (not its children) while resolving, so a mock nested inside it would
+          never mount to set window.sites — deadlocking the poll. */}
+      {import.meta.env.DEV && <DevIdentityMock />}
+      <AuthProvider>
+        <Outlet />
+      </AuthProvider>
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
