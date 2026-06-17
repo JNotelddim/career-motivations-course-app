@@ -103,6 +103,29 @@ Both must match the deployed sub-path (leading **and** trailing slash). If only 
 router 404s; if neither, assets fail to load (browser gets `text/html` where it expects JS/CSS). See the 2026-06-16
 debugging notes for the full diagnosis.
 
+**⚠️ Deep-link / hard-refresh handling — TEMPORARY WORKAROUND (remove when possible):**
+
+Metalab Sites is a plain static host with **no SPA history fallback** — a hard refresh or direct paste of a deep
+route (e.g. `…/worksheet/module/3`) is a real request the host can't satisfy, so it 404s. In-app link clicks are
+fine (handled client-side); only refresh / direct-nav hits this.
+
+As a stopgap we enable React Router's `prerender` (`react-router.config.ts`) for every route, so a file exists at
+each path and the host has something to serve. Two caveats this introduces:
+
+1. In SPA mode (`ssr: false`) prerender just stamps a **copy of the SPA shell** at each path — no per-route markup,
+   so **no perf/SEO gain**. The only benefit is the file existing so deep links don't 404.
+2. With `ssr: false` + `basename` + `prerender`, React Router writes the output **nested under the basename**
+   (`build/client/jared/career-motivations-worksheet/…`) — an open RR bug
+   ([#14587](https://github.com/remix-run/react-router/issues/14587)). Since Sites already serves our upload *from*
+   that sub-path, the prefix double-applies and breaks the deploy. `scripts/lift-subpath.mjs` (wired as the
+   `postbuild` npm hook) lifts the nested output back up to `build/client/` root after every build.
+
+> **This is interim — delete the `prerender` block, the `postbuild` hook, and `scripts/lift-subpath.mjs` once
+> EITHER** (a) Sites gains SPA history fallback (the real fix — a feedback request is out to Jeremy), **OR**
+> (b) RR fixes the basename + prerender nesting ([#14587](https://github.com/remix-run/react-router/issues/14587)).
+> Validated working on deployed Sites 2026-06-17 (deep-link hard-refresh re-loads correctly); the deployed site is
+> the only faithful test — local `serve`/`vite preview` don't reproduce the sub-path mount.
+
 > **Why not GitHub auto-deploy?** Sites' GitHub integration extracts the **entire repo root** to the site
 > directory, with no way to scope the deploy to a build sub-folder. The docs reference a "Source path" setting
 > for exactly this, but per Jeremy (Sites maintainer, 2026-06-16) that's an **AI hallucination in the docs** —
