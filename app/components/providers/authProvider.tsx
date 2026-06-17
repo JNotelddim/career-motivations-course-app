@@ -122,6 +122,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={state}>
+
+    { state.status === "authenticated" && import.meta.env.DEV && (
+      <div className="w-full rounded-md bg-yellow-50 p-4">
+        {/** sites mock warning banner */}
+        <p className="text-sm text-yellow-800">
+          You are currently signed in with a mocked identity (VITE_DEV_IDENTITY=authenticated). This is intended for development purposes only and does not reflect a real user. Please sign out and refresh the page to authenticate with your actual Okta account.
+        </p>
+       </div>
+    )}
+
       {isResolving ? <AuthLoadingScreen /> : children}
     </AuthContext.Provider>
   );

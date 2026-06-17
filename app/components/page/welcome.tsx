@@ -6,7 +6,6 @@ export function Welcome() {
 
   return (
     <main className="flex flex-col items-start justify-center gap-4 p-8 max-w-3xl mx-auto">
-
     <div className="flex w-full flex-row-reverse">
       <Button onClick={() => navigate('/account')}> Account 👤</Button>
     </div>
