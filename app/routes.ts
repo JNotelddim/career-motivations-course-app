@@ -5,5 +5,6 @@ export default [
     index("routes/home.tsx"),
     route(ROUTES.module, "./routes/module_page.tsx"),
     route(ROUTES.account, "./routes/account.tsx"),
+    route(ROUTES.unauthenticated, "./routes/unauthenticated.tsx"),
 
 ] satisfies RouteConfig;
