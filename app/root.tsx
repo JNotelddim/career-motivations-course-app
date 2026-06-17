@@ -33,6 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.ico`} />
         {/* Real Sites SDK loader — prod only. On localhost this path 404s and
             can't carry the Okta session cookie anyway, so local dev relies on
             <DevIdentityMock /> (rendered in App) to provide window.sites. */}
