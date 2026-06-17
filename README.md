@@ -71,13 +71,20 @@ Set deadlines for yourself that work for you.
 ### Local Development
 `npm install` > `npm run dev` : `http://localhost:5173`
 
-To preview the **production build** locally as a static site (mirrors how Sites serves it):
+To smoke-test the **production build** locally:
 ```bash
 npm run build
 npx serve build/client     # then open the printed localhost URL
 ```
-> Note: open the **clean directory URL**, not `…/index.html`. `index.html` is a file, not a route — visiting it
-> directly makes the SPA router match no route and render the 404 page (and a hydration mismatch in the prod build).
+> ⚠️ This does **not** faithfully mirror Sites once the sub-path is configured. Vite doesn't nest output under
+> `base` — `build/client/` has `index.html` + `assets/` at its root, while the build expects to be served *from*
+> `/jared/career-motivations-worksheet/`. So `serve` hosts at `localhost:3000/` and visiting the sub-path locally
+> 404s. Use it only for a rough "does it boot" check; **deployed Sites is the only faithful test** of sub-path
+> routing, asset paths, and deep-link behavior. (A faithful local mirror is possible by serving the output *under*
+> the sub-path, but isn't worth the setup.)
+>
+> Also: open the **clean directory URL**, not `…/index.html` — `index.html` is a file, not a route, so visiting it
+> directly makes the router match no route and render the 404 page (plus a hydration mismatch in the prod build).
 
 
 ### Metalab Sites Deployment
