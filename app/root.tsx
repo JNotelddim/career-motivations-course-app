@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import { AuthProvider } from "./components/providers/authProvider";
+import { DevIdentityMock } from "./components/dev/devIdentityMock";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -25,9 +26,6 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  console.log({ ENV_DEV: import.meta.env.DEV }); 
-  // console.log({ ENV_VITE_DEV_IDENTITY: process.env.VITE_DEV_IDENTITY });
-
   return (
     <html lang="en">
       <head>
@@ -35,52 +33,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <script src="/sdk/v1/sites.js"></script>
-        {import.meta.env.DEV && (
-          <script dangerouslySetInnerHTML={{ __html: `
-            console.log("__DEV_MOCK_SITES_SDK__");
-            console.log("Running in development mode -- Mocking 'window.sites()' SDK for testing identity.");
-
-            if (!window) {
-              console.warn("window is not defined. The mock implementation will not be applied.");
-              return;
-            }
-
-            if (window.sites) {
-              console.warn("window.sites already exists. The mock implementation will not be applied.");
-              return;
-            }
-
-            window.sites = function() {
-              return {
-                user: function() {
-
-                  // 3 core sdk identity scenatios: [ "authenticated", "guest", "sdk-unavailable" ]
-
-                  if (import.meta.env.VITE_DEV_IDENTITY === "guest") {
-                    console.log("Mocking unauthenticated user.");
-                    return Promise.resolve(null);
-                  } else if (import.meta.env.VITE_DEV_IDENTITY === "sdk-unavailable") {
-                    console.log("Mocking SDK unavailable.");
-                    return Promise.reject(new Error("Sites SDK is unavailable"));
-                  } else if (import.meta.env.VITE_DEV_IDENTITY === "authenticated") {
-                    console.log("Mocking authenticated user.");
-                    return Promise.resolve({
-                      _v: "1",
-                      display_name: "Jared Test",
-                      email: "jared-test@metalab.com",
-                      tenant: "metalab",
-                    });
-                  } else {
-                    // Default to unauthenticated if VITE_DEV_IDENTITY is not set or has an unrecognized value
-                    console.warn("VITE_DEV_IDENTITY is not set or has an unrecognized value. Defaulting to unauthenticated state.");
-                    return Promise.resolve(null);
-                  }
-                },
-              };
-            };
-            ` }}></script>
-        )}
+        {/* Real Sites SDK loader — prod only. On localhost this path 404s and
+            can't carry the Okta session cookie anyway, so local dev relies on
+            <DevIdentityMock /> (rendered in App) to provide window.sites. */}
+        {!import.meta.env.DEV && <script src="/sdk/v1/sites.js"></script>}
       </head>
       <body>
         {children}
@@ -93,9 +49,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Outlet />
-    </AuthProvider>
+    <>
+      {/* Outside AuthProvider on purpose: the provider renders a loading gate
+          (not its children) while resolving, so a mock nested inside it would
+          never mount to set window.sites — deadlocking the poll. */}
+      {import.meta.env.DEV && <DevIdentityMock />}
+      <AuthProvider>
+        <Outlet />
+      </AuthProvider>
+    </>
   );
 }
 
