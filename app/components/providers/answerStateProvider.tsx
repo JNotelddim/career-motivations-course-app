@@ -4,7 +4,7 @@ import { MODULES, type ExerciseKind } from "~/consts/modules";
 
 type ShortTextAnswer = {
     value: string;
-    kind: ExerciseKind
+    kind: ExerciseKind.SHORT_TEXT;
     isComplete: boolean;
     created: Date;
     lastEdited: Date;
@@ -12,15 +12,7 @@ type ShortTextAnswer = {
 
 type LongTextAnswer = {
     value: string;
-    kind: ExerciseKind
-    isComplete: boolean;
-    created: Date;
-    lastEdited: Date;
-}
-
-type GaugeAnswer = {
-    value: number;
-    kind: ExerciseKind;
+    kind: ExerciseKind.LONG_TEXT;
     isComplete: boolean;
     created: Date;
     lastEdited: Date;
@@ -28,7 +20,7 @@ type GaugeAnswer = {
 
 type MatrixAnswer = {
     value: Record<string, number>;
-    kind: ExerciseKind;
+    kind: ExerciseKind.MATRIX;
     isComplete: boolean;
     created: Date;
     lastEdited: Date;
@@ -36,13 +28,13 @@ type MatrixAnswer = {
 
 type RowListAnswer = {
     value: Record<string, boolean>;
-    kind: ExerciseKind;
+    kind: ExerciseKind.ROW_LIST;
     isComplete: boolean;
     created: Date;
     lastEdited: Date;
 }
 
-type AnswerValue = ShortTextAnswer | LongTextAnswer | GaugeAnswer | MatrixAnswer | RowListAnswer;
+type AnswerValue = ShortTextAnswer | LongTextAnswer | MatrixAnswer | RowListAnswer;
 
 type AnswerStateContextType = {
     answers: Record<string, AnswerValue>;
