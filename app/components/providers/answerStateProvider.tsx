@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { MODULES, type ExerciseKind } from "~/consts/modules";
 
-type ShortTextAnswer = {
+export type ShortTextAnswer = {
     value: string;
     kind: ExerciseKind.SHORT_TEXT;
     isComplete: boolean;
@@ -10,7 +10,7 @@ type ShortTextAnswer = {
     lastEdited: Date;
 }
 
-type LongTextAnswer = {
+export type LongTextAnswer = {
     value: string;
     kind: ExerciseKind.LONG_TEXT;
     isComplete: boolean;
@@ -18,7 +18,7 @@ type LongTextAnswer = {
     lastEdited: Date;
 }
 
-type MatrixAnswer = {
+export type MatrixAnswer = {
     value: Record<string, number>;
     kind: ExerciseKind.MATRIX;
     isComplete: boolean;
@@ -26,7 +26,7 @@ type MatrixAnswer = {
     lastEdited: Date;
 }
 
-type RowListAnswer = {
+export type RowListAnswer = {
     value: Record<string, boolean>;
     kind: ExerciseKind.ROW_LIST;
     isComplete: boolean;

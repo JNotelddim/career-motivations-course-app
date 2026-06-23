@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "react-router";
 import { Button } from "../base/button";
-import { MODULES } from "~/consts/modules";
+import { ExerciseKind, MODULES } from "~/consts/modules";
 import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
-import { useAnswerState } from "../providers/answerStateProvider";
+import { useAnswerState, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
 
 const firstModuleId = MODULES[0].id;
@@ -99,9 +99,9 @@ export function Module() {
                           <TextInput
                             value={(moduleAnswers[exercise.id]?.value as string) || ""}
                             onChange={(newValue) => {
-                                const newAnswer = {
+                                const newAnswer: ShortTextAnswer = {
                                     value: newValue,
-                                    kind: exercise.kind,
+                                    kind: ExerciseKind.SHORT_TEXT, //exercise.kind,
                                     isComplete: newValue.trim() !== "",
                                     created: moduleAnswers[exercise.id]?.created || new Date(),
                                     lastEdited: new Date(),
