@@ -3,6 +3,7 @@ import { Button } from "../base/button";
 import { MODULES } from "~/consts/modules";
 import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
+import { useAnswerState } from "../providers/answerStateProvider";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
@@ -19,6 +20,10 @@ const useModulePageData = () => {
 export function Module() {
     const navigate = useNavigate();
     const { moduleId, title, description, resources, sections } = useModulePageData();
+    const { answers, save, getModuleState } = useAnswerState();
+
+    // TODO: consider performance implications of this - should it be memoized?
+    const moduleAnswers = getModuleState(moduleId);
 
     const isNextModuleEnabled = moduleId !== undefined && moduleId < lastModuleId;
     const isPrevModuleEnabled = moduleId !== undefined && moduleId > firstModuleId;
