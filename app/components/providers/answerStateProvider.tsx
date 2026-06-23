@@ -55,6 +55,8 @@ const AnswerStateContext = React.createContext<AnswerStateContextType | null>(nu
 export const AnswerStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [answers, setAnswers] = React.useState<Record<string, AnswerValue>>({});
 
+    console.log( answers )
+
     const save = (questionId: string, answer: AnswerValue) => {
         // TODO: eventually persist to localStorage and trigger a progress update to sync to db
         setAnswers((prevAnswers) => ({

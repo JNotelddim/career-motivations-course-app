@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import { AuthProvider } from "./components/providers/authProvider";
 import { DevIdentityMock } from "./components/dev/devIdentityMock";
 import "./app.css";
+import { AnswerStateProvider } from "./components/providers/answerStateProvider";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -56,7 +57,9 @@ export default function App() {
           never mount to set window.sites — deadlocking the poll. */}
       {import.meta.env.DEV && <DevIdentityMock />}
       <AuthProvider>
-        <Outlet />
+        <AnswerStateProvider>
+          <Outlet />
+        </AnswerStateProvider>
       </AuthProvider>
     </>
   );

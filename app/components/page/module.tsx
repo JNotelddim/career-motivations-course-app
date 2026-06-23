@@ -4,6 +4,7 @@ import { MODULES } from "~/consts/modules";
 import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
 import { useAnswerState } from "../providers/answerStateProvider";
+import { TextInput } from "../base/textInput";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
@@ -94,6 +95,21 @@ export function Module() {
                   {section.exercises.map((exercise) => (
                       <div key={exercise.id} className="mb-2">
                           <p>[{exercise.kind}] {exercise.prompt}</p>
+
+                          <TextInput
+                            value={(moduleAnswers[exercise.id]?.value as string) || ""}
+                            onChange={(newValue) => {
+                                const newAnswer = {
+                                    value: newValue,
+                                    kind: exercise.kind,
+                                    isComplete: newValue.trim() !== "",
+                                    created: moduleAnswers[exercise.id]?.created || new Date(),
+                                    lastEdited: new Date(),
+                                };
+                                save(exercise.id, newAnswer);
+                            }}
+                            placeholder="Type your answer here..."
+                          />
                           {/** TODO: add text input with form events for saving response to local storage*/}
                       </div>
                   ))}

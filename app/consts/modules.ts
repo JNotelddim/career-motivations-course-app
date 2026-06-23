@@ -15,6 +15,8 @@ export enum ExerciseKind {
 };
 
 
+// TODO: configure per-question form validation (ex/ min+max length for text answers, min+max value for numbers in matrices, min/max rows for rowlists);
+
 // Fields common to every exercise, intersected with a per-kind variant.
 // `id` is a STABLE string (never positional) so saved responses survive content edits/reordering.
 export type Exercise = {
