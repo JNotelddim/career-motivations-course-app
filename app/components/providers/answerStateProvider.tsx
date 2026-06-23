@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { MODULES, type ExerciseKind } from "~/consts/modules";
 
@@ -52,18 +52,41 @@ type AnswerStateContextType = {
 
 const AnswerStateContext = React.createContext<AnswerStateContextType | null>(null);
 
+
+/**
+ * Save an answer to localStorage.
+ */
+const saveToLocalStorage = (questionId: string, answer: AnswerValue) => {
+    const storedAnswers = localStorage.getItem("answers");
+    const parsedAnswers = storedAnswers ? JSON.parse(storedAnswers) : {};
+    parsedAnswers[questionId] = answer;
+    localStorage.setItem("answers", JSON.stringify(parsedAnswers));
+}
+
+/**
+ * Manages the state of answers for all exercises in the app.
+ * Provides methods to save answers and retrieve answers for a specific module.
+ */
 export const AnswerStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [answers, setAnswers] = React.useState<Record<string, AnswerValue>>({});
 
-    console.log( answers )
+    useEffect(() => {
+        // Load answers from localStorage on mount
+        const storedAnswers = localStorage.getItem("answers");
+        if (storedAnswers) {
+            setAnswers(JSON.parse(storedAnswers));
+        }
+    }, []);
 
     const save = (questionId: string, answer: AnswerValue) => {
-        // TODO: eventually persist to localStorage and trigger a progress update to sync to db
         setAnswers((prevAnswers) => ({
             ...prevAnswers,
             [questionId]: answer,
         }));
+
+        saveToLocalStorage(questionId, answer);
     }
+
 
     const getModuleState = (moduleId: number) => {
         // for question in module, get question ids, then gather all answers for those question ids and return them as a record

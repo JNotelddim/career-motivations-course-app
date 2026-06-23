@@ -26,6 +26,8 @@ export function Module() {
     // TODO: consider performance implications of this - should it be memoized?
     const moduleAnswers = getModuleState(moduleId);
 
+    console.log("Module answers:", moduleAnswers);
+
     const isNextModuleEnabled = moduleId !== undefined && moduleId < lastModuleId;
     const isPrevModuleEnabled = moduleId !== undefined && moduleId > firstModuleId;
 
