@@ -139,7 +139,12 @@ export function Module() {
                                     const newAnswer: MatrixAnswer = {
                                         value: newValue,
                                         kind: ExerciseKind.MATRIX,
-                                        isComplete: false, // TODO: how to evaluate completion ? // newValue.trim() !== "",
+                                        // complete when every cell in the grid has content
+                                        isComplete:
+                                            exercise.rows.length > 0 &&
+                                            exercise.columns.length > 0 &&
+                                            Object.values(newValue).filter((cell) => cell.trim() !== "").length ===
+                                                exercise.rows.length * exercise.columns.length,
                                         created: moduleAnswers[exercise.id]?.created || new Date(),
                                         lastEdited: new Date(),
                                     };
@@ -156,7 +161,14 @@ export function Module() {
                                     const newAnswer: RowListAnswer= {
                                         value: newValue,
                                         kind: ExerciseKind.ROW_LIST,
-                                        isComplete: false, // TODO: how to evaluate completion ? // newValue.trim() !== "",
+                                        // complete when there's at least one row and every row has all fields filled
+                                        isComplete:
+                                            newValue.length > 0 &&
+                                            newValue.every((row) =>
+                                                exercise.fields.every(
+                                                    (field) => (row.values[field.id] ?? "").trim() !== "",
+                                                ),
+                                            ),
                                         created: moduleAnswers[exercise.id]?.created || new Date(),
                                         lastEdited: new Date(),
                                     };
