@@ -3,9 +3,9 @@ import { Button } from "../base/button";
 import { ExerciseKind, MODULES } from "~/consts/modules";
 import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
-import { useAnswerState, type LongTextAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
+import { useAnswerState, type LongTextAnswer, type MatrixAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
-import { TextArea } from "../base";
+import { Matrix, TextArea } from "../base";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
@@ -122,6 +122,26 @@ export function Module() {
                                         value: newValue,
                                         kind: ExerciseKind.LONG_TEXT,
                                         isComplete: newValue.trim() !== "",
+                                        created: moduleAnswers[exercise.id]?.created || new Date(),
+                                        lastEdited: new Date(),
+                                    };
+                                    save(exercise.id, newAnswer);
+                                }}
+                                placeholder="Type your answer here..."
+                            />
+                          )}
+
+                          {exercise.kind === ExerciseKind.MATRIX && (
+                            <Matrix
+                                // TODO: fix typing
+                                value={(moduleAnswers[exercise.id]?.value as string) || ""}
+                                rows={exercise.rows || []}
+                                columns={exercise.columns || []}
+                                onChange={(newValue) => {
+                                    const newAnswer: MatrixAnswer = {
+                                        value: newValue,
+                                        kind: ExerciseKind.MATRIX,
+                                        isComplete: false, // TODO: how to evaluate completion ? // newValue.trim() !== "",
                                         created: moduleAnswers[exercise.id]?.created || new Date(),
                                         lastEdited: new Date(),
                                     };
