@@ -1,3 +1,4 @@
+export * from "./banner";
 export * from "./button";
 export * from "./link";
 export * from "./textInput";

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
 import { useAnswerState, type LongTextAnswer, type MatrixAnswer, type RowListAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
-import { Matrix, RowList, TextArea, type RowListRow } from "../base";
+import { Banner, Matrix, RowList, TextArea, type RowListRow } from "../base";
 import { validateAnswer } from "~/lib/validation";
 
 const firstModuleId = MODULES[0].id;
@@ -27,8 +27,6 @@ const useModulePageData = () => {
     const moduleData = MODULES[moduleId - 1]; // moduleId starts from 1 and corresponds to index in MODULES array
     return { moduleId, ...moduleData };
 }
-
-// TODO: consider how to communicate that answers are saved only in the user's browser?
 
 export function Module() {
     const navigate = useNavigate();
@@ -97,6 +95,12 @@ export function Module() {
       </ul>
     )}
     
+    <Banner tone="neutral" icon="🔒" className="mt-2">
+        Your answers are saved only in this browser, on this device. They never
+        leave your machine — so clearing your browser data will erase them, and
+        they won't follow you to another device.
+    </Banner>
+
     {!sections || sections.length === 0 ? (
         <p className="text-md sm:text-lg">No sections available for this module.</p>
     ) : (sections.map((section) => (
