@@ -15,7 +15,16 @@ export enum ExerciseKind {
 };
 
 
-// TODO: configure per-question form validation (ex/ min+max length for text answers, min+max value for numbers in matrices, min/max rows for rowlists);
+// Optional, opt-in validation config per kind. Absent = no rules (the common case).
+// Consumed by validateAnswer() (app/lib/validation.ts); advisory only — never blocks input.
+export type TextValidation = { minLength?: number; maxLength?: number };
+export type MatrixValidation = {
+    cellType?: "text" | "number";
+    min?: number; // numeric cells only
+    max?: number; // numeric cells only
+    uniqueCells?: boolean; // no two filled cells share a value (e.g. a forced ranking)
+};
+export type RowListValidation = { minRows?: number; maxRows?: number; requiredFields?: string[] };
 
 // Fields common to every exercise, intersected with a per-kind variant.
 // `id` is a STABLE string (never positional) so saved responses survive content edits/reordering.
@@ -24,10 +33,10 @@ export type Exercise = {
     prompt: string;
     guidance?: string; // the "question-specific prompt" — explanatory context distinct from the ask
 } & (
-    | { kind: ExerciseKind.SHORT_TEXT }
-    | { kind: ExerciseKind.LONG_TEXT }
-    | { kind: ExerciseKind.MATRIX; columns: { id: string; label: string }[]; rows: string[] } // fixed grid
-    | { kind: ExerciseKind.ROW_LIST; fields: { id: string; label: string }[] } // repeatable record rows (add/remove)
+    | { kind: ExerciseKind.SHORT_TEXT; validation?: TextValidation }
+    | { kind: ExerciseKind.LONG_TEXT; validation?: TextValidation }
+    | { kind: ExerciseKind.MATRIX; columns: { id: string; label: string }[]; rows: string[]; validation?: MatrixValidation } // fixed grid
+    | { kind: ExerciseKind.ROW_LIST; fields: { id: string; label: string }[]; validation?: RowListValidation } // repeatable record rows (add/remove)
 );
 
 type Section = {
@@ -134,7 +143,7 @@ const MODULE_3: WorksheetModule = {
         {
             title: "Ranking & defense",
             exercises: [
-                { id: "m03-ranking", kind: ExerciseKind.MATRIX, prompt: "Forced ranking: rank all 8 anchors from most (1) to least (8).", guidance: "No ties — the discomfort of differentiating adjacent ranks is the exercise.", rows: SCHEIN_ANCHORS, columns: [{ id: "rank", label: "Rank (1 = most, 8 = least)" }] },
+                { id: "m03-ranking", kind: ExerciseKind.MATRIX, prompt: "Forced ranking: rank all 8 anchors from most (1) to least (8).", guidance: "No ties — the discomfort of differentiating adjacent ranks is the exercise.", rows: SCHEIN_ANCHORS, columns: [{ id: "rank", label: "Rank (1 = most, 8 = least)" }], validation: { cellType: "number", min: 1, max: 8, uniqueCells: true } },
                 { id: "m03-defense", kind: ExerciseKind.LONG_TEXT, prompt: "Top-2 defense: for each of your top 2 anchors, defend it against the next 2 ranks.", guidance: "The shape: 'I rank X above Y because [past decision/pattern]. The strongest counterargument is [Z], but [why X still wins].'" },
             ],
         },
@@ -155,14 +164,14 @@ const MODULE_3: WorksheetModule = {
     ],
 };
 
-const planExercises = (plan: "a" | "b" | "c") => [
+const planExercises = (plan: "a" | "b" | "c"): Exercise[] => [
     { id: `m04-${plan}-headline`, kind: ExerciseKind.SHORT_TEXT as const, prompt: "Headline — six words for this plan." },
     { id: `m04-${plan}-week`, kind: ExerciseKind.LONG_TEXT as const, prompt: "A typical week: 4–6 bullets — what's in the calendar, what am I making, who am I talking to?" },
     { id: `m04-${plan}-archetype`, kind: ExerciseKind.SHORT_TEXT as const, prompt: "Which Staff Engineer archetype (or manager-track equivalent) best describes this plan?" },
     { id: `m04-${plan}-gained`, kind: ExerciseKind.LONG_TEXT as const, prompt: "What gets gained." },
     { id: `m04-${plan}-lost`, kind: ExerciseKind.LONG_TEXT as const, prompt: "What gets lost / given up." },
     { id: `m04-${plan}-openqs`, kind: ExerciseKind.LONG_TEXT as const, prompt: "Three open questions — what would I need to learn, test, or find out to know if this plan is real?" },
-    { id: `m04-${plan}-gauge`, kind: ExerciseKind.MATRIX as const, prompt: "Gauge this plan (1–10 each).", guidance: "High = more favorable.", rows: ["Confidence", "Resources required", "Like factor", "Coherence with top anchors"], columns: [{ id: "score", label: "Score (1–10)" }] },
+    { id: `m04-${plan}-gauge`, kind: ExerciseKind.MATRIX as const, prompt: "Gauge this plan (1–10 each).", guidance: "High = more favorable.", rows: ["Confidence", "Resources required", "Like factor", "Coherence with top anchors"], columns: [{ id: "score", label: "Score (1–10)" }], validation: { cellType: "number", min: 1, max: 10 } },
 ];
 
 const MODULE_4: WorksheetModule = {

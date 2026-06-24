@@ -6,9 +6,20 @@ import { ROUTES } from "~/consts/routes";
 import { useAnswerState, type LongTextAnswer, type MatrixAnswer, type RowListAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
 import { Matrix, RowList, TextArea, type RowListRow } from "../base";
+import { validateAnswer } from "~/lib/validation";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
+
+// Advisory validation messages, rendered beneath a control. Empty list renders nothing.
+const AnswerErrors: React.FC<{ errors: string[] }> = ({ errors }) =>
+    errors.length === 0 ? null : (
+        <ul className="mt-1 text-sm text-red-600 list-disc list-inside">
+            {errors.map((error, index) => (
+                <li key={index}>{error}</li>
+            ))}
+        </ul>
+    );
 
 const useModulePageData = () => {
     const moduleId = parseInt(useParams().moduleId || "0", 10);
@@ -103,7 +114,7 @@ export function Module() {
                                     const newAnswer: ShortTextAnswer = {
                                         value: newValue,
                                         kind: ExerciseKind.SHORT_TEXT,
-                                        isComplete: newValue.trim() !== "",
+                                        isComplete: newValue.trim() !== "" && validateAnswer(exercise, newValue).length === 0,
                                         created: moduleAnswers[exercise.id]?.created || new Date(),
                                         lastEdited: new Date(),
                                     };
@@ -120,7 +131,7 @@ export function Module() {
                                     const newAnswer: LongTextAnswer = {
                                         value: newValue,
                                         kind: ExerciseKind.LONG_TEXT,
-                                        isComplete: newValue.trim() !== "",
+                                        isComplete: newValue.trim() !== "" && validateAnswer(exercise, newValue).length === 0,
                                         created: moduleAnswers[exercise.id]?.created || new Date(),
                                         lastEdited: new Date(),
                                     };
@@ -144,7 +155,8 @@ export function Module() {
                                             exercise.rows.length > 0 &&
                                             exercise.columns.length > 0 &&
                                             Object.values(newValue).filter((cell) => cell.trim() !== "").length ===
-                                                exercise.rows.length * exercise.columns.length,
+                                                exercise.rows.length * exercise.columns.length &&
+                                            validateAnswer(exercise, newValue).length === 0,
                                         created: moduleAnswers[exercise.id]?.created || new Date(),
                                         lastEdited: new Date(),
                                     };
@@ -168,7 +180,8 @@ export function Module() {
                                                 exercise.fields.every(
                                                     (field) => (row.values[field.id] ?? "").trim() !== "",
                                                 ),
-                                            ),
+                                            ) &&
+                                            validateAnswer(exercise, newValue).length === 0,
                                         created: moduleAnswers[exercise.id]?.created || new Date(),
                                         lastEdited: new Date(),
                                     };
@@ -176,6 +189,8 @@ export function Module() {
                                 }}
                             />
                         )}
+
+                          <AnswerErrors errors={validateAnswer(exercise, moduleAnswers[exercise.id]?.value)} />
                       </div>
                   ))}
               </div>
