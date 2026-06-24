@@ -5,8 +5,9 @@ import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
 import { useAnswerState, type LongTextAnswer, type MatrixAnswer, type RowListAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
-import { Banner, Matrix, RowList, TextArea, type RowListRow } from "../base";
+import { Banner, Matrix, ProgressBar, RowList, TextArea, type RowListRow } from "../base";
 import { validateAnswer } from "~/lib/validation";
+import { moduleProgress } from "~/lib/progress";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
@@ -35,6 +36,9 @@ export function Module() {
 
     // TODO: consider performance implications of this - should it be memoized?
     const moduleAnswers = getModuleState(moduleId);
+
+    const moduleDefinition = MODULES[moduleId - 1];
+    const progress = moduleDefinition ? moduleProgress(moduleDefinition, answers) : null;
 
     const isNextModuleEnabled = moduleId !== undefined && moduleId < lastModuleId;
     const isPrevModuleEnabled = moduleId !== undefined && moduleId > firstModuleId;
@@ -69,6 +73,19 @@ export function Module() {
 
     <h1 className="text-2xl font-bold sm:text-3xl">Module {moduleId}: {title} </h1>
 
+    {progress && (
+      <div className="w-full">
+        <div className="flex items-center justify-between mb-1.5 text-sm text-gray-600">
+          <span className="font-medium">
+            {progress.state === "complete"
+              ? "✓ Module complete"
+              : `${Math.round(progress.percent * 100)}% complete`}
+          </span>
+          <span>{progress.requiredDone}/{progress.requiredTotal} required exercises</span>
+        </div>
+        <ProgressBar value={progress.percent} complete={progress.state === "complete"} />
+      </div>
+    )}
 
     <div className="w-full flex justify-between">
         <Button onClick={handlePrevModuleNav} disabled={!isPrevModuleEnabled}>&larr; Previous</Button>
