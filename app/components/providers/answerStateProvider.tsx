@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 
 import { MODULES, type ExerciseKind } from "~/consts/modules";
+import type { RowListRow } from "../base";
 
 export type ShortTextAnswer = {
     value: string;
@@ -27,7 +28,7 @@ export type MatrixAnswer = {
 }
 
 export type RowListAnswer = {
-    value: Record<string, boolean>;
+    value: RowListRow[];
     kind: ExerciseKind.ROW_LIST;
     isComplete: boolean;
     created: Date;

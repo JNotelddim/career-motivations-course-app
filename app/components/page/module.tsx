@@ -3,9 +3,9 @@ import { Button } from "../base/button";
 import { ExerciseKind, MODULES } from "~/consts/modules";
 import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
-import { useAnswerState, type LongTextAnswer, type MatrixAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
+import { useAnswerState, type LongTextAnswer, type MatrixAnswer, type RowListAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
-import { Matrix, TextArea } from "../base";
+import { Matrix, RowList, TextArea, type RowListRow } from "../base";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
@@ -89,13 +89,12 @@ export function Module() {
     {!sections || sections.length === 0 ? (
         <p className="text-md sm:text-lg">No sections available for this module.</p>
     ) : (sections.map((section) => (
-              <div key={section.title} className="mb-2">
+              <div key={section.title} className="mb-2 w-full">
                   <h3 className="text-lg font-semibold">{section.title}</h3>
 
-                  { /** TODO: adjust exercises map to accommodate different exercise types */} 
                   {section.exercises.map((exercise) => (
                       <div key={exercise.id} className="mb-2">
-                          <p>[{exercise.kind}] {exercise.prompt}</p>
+                          <p>{exercise.prompt}</p>
 
                           {exercise.kind === ExerciseKind.SHORT_TEXT && (
                             <TextInput
@@ -150,6 +149,22 @@ export function Module() {
                             />
                           )}
 
+                        {exercise.kind === ExerciseKind.ROW_LIST && (
+                            <RowList
+                                value={(moduleAnswers[exercise.id]?.value as RowListRow[]) || []}
+                                fields={exercise.fields || []}
+                                onChange={(newValue) => {
+                                    const newAnswer: RowListAnswer= {
+                                        value: newValue,
+                                        kind: ExerciseKind.ROW_LIST,
+                                        isComplete: false, // TODO: how to evaluate completion ? // newValue.trim() !== "",
+                                        created: moduleAnswers[exercise.id]?.created || new Date(),
+                                        lastEdited: new Date(),
+                                    };
+                                    save(exercise.id, newAnswer);
+                                }}
+                            />
+                        )}
                       </div>
                   ))}
               </div>
