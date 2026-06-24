@@ -3,8 +3,9 @@ import { Button } from "../base/button";
 import { ExerciseKind, MODULES } from "~/consts/modules";
 import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
-import { useAnswerState, type ShortTextAnswer } from "../providers/answerStateProvider";
+import { useAnswerState, type LongTextAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
+import { TextArea } from "../base";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
@@ -96,20 +97,40 @@ export function Module() {
                       <div key={exercise.id} className="mb-2">
                           <p>[{exercise.kind}] {exercise.prompt}</p>
 
-                          <TextInput
-                            value={(moduleAnswers[exercise.id]?.value as string) || ""}
-                            onChange={(newValue) => {
-                                const newAnswer: ShortTextAnswer = {
-                                    value: newValue,
-                                    kind: ExerciseKind.SHORT_TEXT, //exercise.kind,
-                                    isComplete: newValue.trim() !== "",
-                                    created: moduleAnswers[exercise.id]?.created || new Date(),
-                                    lastEdited: new Date(),
-                                };
-                                save(exercise.id, newAnswer);
-                            }}
-                            placeholder="Type your answer here..."
-                          />
+                          {exercise.kind === ExerciseKind.SHORT_TEXT && (
+                            <TextInput
+                                value={(moduleAnswers[exercise.id]?.value as string) || ""}
+                                onChange={(newValue) => {
+                                    const newAnswer: ShortTextAnswer = {
+                                        value: newValue,
+                                        kind: ExerciseKind.SHORT_TEXT,
+                                        isComplete: newValue.trim() !== "",
+                                        created: moduleAnswers[exercise.id]?.created || new Date(),
+                                        lastEdited: new Date(),
+                                    };
+                                    save(exercise.id, newAnswer);
+                                }}
+                                placeholder="Type your answer here..."
+                            />
+                          )}
+
+                          {exercise.kind === ExerciseKind.LONG_TEXT && (
+                            <TextArea
+                                value={(moduleAnswers[exercise.id]?.value as string) || ""}
+                                onChange={(newValue) => {
+                                    const newAnswer: LongTextAnswer = {
+                                        value: newValue,
+                                        kind: ExerciseKind.LONG_TEXT,
+                                        isComplete: newValue.trim() !== "",
+                                        created: moduleAnswers[exercise.id]?.created || new Date(),
+                                        lastEdited: new Date(),
+                                    };
+                                    save(exercise.id, newAnswer);
+                                }}
+                                placeholder="Type your answer here..."
+                            />
+                          )}
+
                       </div>
                   ))}
               </div>
