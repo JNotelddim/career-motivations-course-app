@@ -27,6 +27,8 @@ declare global {
        * error. Per the docs it never throws — `null` is the only failure mode.
        */
       user: (opts?: { fresh?: boolean }) => Promise<SitesViewer | null>;
+      /** Document Database surface — see `~/lib/sitesDb`. Optional: not every page needs it. */
+      db?: import("~/lib/sitesDb").SitesDb;
     };
   }
 }

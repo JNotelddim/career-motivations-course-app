@@ -56,6 +56,19 @@ export function DevIdentityMock() {
           user: (_opts?: { fresh?: boolean }) =>
             Promise.resolve(selected === "authenticated" ? MOCK_VIEWER : null),
         };
+
+        // Attach the document-DB mock via a DEV-gated dynamic import so it (and the
+        // future RxDB adapter behind its Store seam) is never pulled into the prod
+        // bundle. `author_email` mirrors the viewer: the mock email when authenticated,
+        // "" (anonymous) for guest, matching the public-write contract. The brief async
+        // gap before `db` attaches is harmless — only user-initiated reads/writes use it.
+        void import("./sitesDbMock").then(({ createSitesDbMock }) => {
+          if (window.sites && !window.sites.db) {
+            window.sites.db = createSitesDbMock({
+              authorEmail: selected === "authenticated" ? MOCK_VIEWER.email : "",
+            });
+          }
+        });
       }
 
       setMode(selected);
