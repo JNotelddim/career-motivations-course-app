@@ -1,4 +1,5 @@
 import cn from "classnames";
+import { FIELD_CLASS } from "./styles";
 
 // Repeatable-record control: an add/remove list of rows, each row a record keyed by `fields`.
 // Each row carries a hand-rolled stable `id` (crypto.randomUUID) so React keys and answer
@@ -59,7 +60,7 @@ export const RowList: React.FC<{
                                 type="text"
                                 value={row.values[field.id] ?? ""}
                                 onChange={(e) => handleFieldChange(row.id, field.id, e.target.value)}
-                                className="border rounded p-2"
+                                className={FIELD_CLASS}
                             />
                         </label>
                     ))}
@@ -70,7 +71,7 @@ export const RowList: React.FC<{
                 <button
                     type="button"
                     onClick={handleAddRow}
-                    className="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded hover:bg-blue-600 cursor-pointer transition-colors duration-200"
+                    className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-blue-600 cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
                 >
                     {addRowLabel}
                 </button>

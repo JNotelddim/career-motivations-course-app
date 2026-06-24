@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
 import { useAnswerState, type LongTextAnswer, type MatrixAnswer, type RowListAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
-import { Matrix, RowList, TextArea, type RowListRow } from "../base";
+import { Banner, Matrix, RowList, TextArea, type RowListRow } from "../base";
 import { validateAnswer } from "~/lib/validation";
 
 const firstModuleId = MODULES[0].id;
@@ -27,8 +27,6 @@ const useModulePageData = () => {
     const moduleData = MODULES[moduleId - 1]; // moduleId starts from 1 and corresponds to index in MODULES array
     return { moduleId, ...moduleData };
 }
-
-// TODO: consider how to communicate that answers are saved only in the user's browser?
 
 export function Module() {
     const navigate = useNavigate();
@@ -77,14 +75,14 @@ export function Module() {
         <Button onClick={handleNextModuleNav} disabled={!isNextModuleEnabled}>Next &rarr;</Button>
     </div>
 
-  <p className="text-md sm:text-lg">
+  <p className="text-base sm:text-lg leading-relaxed text-gray-700">
     {description}
   </p>
 
-    <h2 className="text-xl font-semibold mt-4"> Resources </h2>
+    <h2 className="text-xl font-semibold mt-6"> Resources </h2>
 
     {!resources || resources.length === 0 ? (
-        <p className="text-md sm:text-lg">No resources available for this module.</p>
+        <p className="text-base text-gray-500">No resources available for this module.</p>
     ) : (
       <ul className="list-disc list-inside">
           {resources.map((resource, index) => (
@@ -97,15 +95,22 @@ export function Module() {
       </ul>
     )}
     
-    {!sections || sections.length === 0 ? (
-        <p className="text-md sm:text-lg">No sections available for this module.</p>
-    ) : (sections.map((section) => (
-              <div key={section.title} className="mb-2 w-full">
-                  <h3 className="text-lg font-semibold">{section.title}</h3>
+    <Banner tone="neutral" icon="🔒" className="mt-2">
+        Your answers are saved only in this browser, on this device. They never
+        leave your machine — so clearing your browser data will erase them, and
+        they won't follow you to another device.
+    </Banner>
 
+    {!sections || sections.length === 0 ? (
+        <p className="text-base text-gray-500">No sections available for this module.</p>
+    ) : (sections.map((section) => (
+              <div key={section.title} className="mt-4 w-full">
+                  <h3 className="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">{section.title}</h3>
+
+                  <div className="flex flex-col gap-6">
                   {section.exercises.map((exercise) => (
-                      <div key={exercise.id} className="mb-2">
-                          <p>{exercise.prompt}</p>
+                      <div key={exercise.id} className="flex flex-col gap-1.5">
+                          <p className="font-medium">{exercise.prompt}</p>
 
                           {exercise.kind === ExerciseKind.SHORT_TEXT && (
                             <TextInput
@@ -193,6 +198,7 @@ export function Module() {
                           <AnswerErrors errors={validateAnswer(exercise, moduleAnswers[exercise.id]?.value)} />
                       </div>
                   ))}
+                  </div>
               </div>
           ))
     )}

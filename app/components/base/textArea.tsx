@@ -1,4 +1,5 @@
 import cn from "classnames";
+import { FIELD_CLASS } from "./styles";
 
 // Long-text control — a clean redundant-instance of `TextInput` (textInput.tsx) over a <textarea>.
 // Pure controlled component: takes value + onChange, knows nothing about the answer schema.
@@ -27,7 +28,7 @@ export const TextArea: React.FC<{
                     }
                 }}
                 placeholder={placeholder}
-                className={cn("border rounded p-2 w-full", className)}
+                className={cn(FIELD_CLASS, className)}
             />
         </div>
     );

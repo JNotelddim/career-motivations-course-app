@@ -7,6 +7,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router";
 import { ROUTES } from "~/consts/routes";
+import { Banner } from "~/components/base";
 
 /**
  * Raw shape returned by the Sites v1 Platform SDK (`/sdk/v1/sites.js`).
@@ -124,15 +125,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={state}>
-
-    { state.status === "authenticated" && import.meta.env.DEV && (
-      <div className="w-full rounded-md bg-yellow-50 p-4">
-        {/** sites mock warning banner */}
-        <p className="text-sm text-yellow-800">
-          You are currently signed in with a mocked identity (VITE_DEV_IDENTITY=authenticated). This is intended for development purposes only and does not reflect a real user. Please sign out and refresh the page to authenticate with your actual Okta account.
-        </p>
-       </div>
-    )}
+      {state.status === "authenticated" && import.meta.env.DEV && (
+        <Banner tone="warning" icon="⚠️" className="rounded-none border-x-0 border-t-0">
+          You're signed in with a <strong>mocked identity</strong>{" "}
+          (<code>VITE_DEV_IDENTITY=authenticated</code>) — development only, not a
+          real user. Sign out and refresh to authenticate with your Okta account.
+        </Banner>
+      )}
 
       {isResolving ? <AuthLoadingScreen /> : children}
     </AuthContext.Provider>
@@ -152,7 +151,7 @@ export function useAuth(): AuthState {
 function AuthLoadingScreen() {
   return (
     <main className="flex min-h-screen items-center justify-center p-8">
-      <p className="text-md sm:text-lg">Signing you in…</p>
+      <p className="text-base sm:text-lg">Signing you in…</p>
     </main>
   );
 }

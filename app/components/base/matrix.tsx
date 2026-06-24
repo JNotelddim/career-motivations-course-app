@@ -1,4 +1,5 @@
 import cn from "classnames";
+import { FIELD_CLASS } from "./styles";
 
 // Fixed-grid control: rows (fixed labels) × columns. Each cell is a free-text input —
 // columns in the content model carry both text asks ("Examples", "Gut reaction") and
@@ -34,7 +35,7 @@ export const Matrix: React.FC<{
   return (
     <div className={cn("overflow-x-auto", className)}>
       {!rows?.length && !columns?.length && (
-        <p className="text-md sm:text-lg">
+        <p className="text-base sm:text-lg">
           Error: No rows or columns defined for this matrix.
         </p>
       )}
@@ -71,7 +72,7 @@ export const Matrix: React.FC<{
                       onChange={(e) =>
                         handleCellChange(rowIndex, column.id, e.target.value)
                       }
-                      className="w-full border rounded p-2"
+                      className={FIELD_CLASS}
                     />
                   </td>
                 ))}
