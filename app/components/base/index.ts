@@ -1,2 +1,6 @@
 export * from "./button";
 export * from "./link";
+export * from "./textInput";
+export * from "./textArea";
+export * from "./matrix";
+export * from "./rowList";

@@ -1,9 +1,11 @@
 // scripts/check-no-dev-mock.mjs
 //
-// Post-build guard: fails the build loudly if the dev identity mock leaked into
-// the production output. Pairs with the __DEV_IDENTITY_MOCK__ sentinel in
-// app/components/dev/devIdentityMock.tsx, which should be dead-code-eliminated
-// from any production build (gated by `import.meta.env.DEV`).
+// Post-build guard: fails the build loudly if any dev mock leaked into the
+// production output. Pairs with the sentinels in app/components/dev/ — the
+// identity mock (devIdentityMock.tsx) and the sites.db mock (sitesDbMock.ts) —
+// each of which should be dead-code-eliminated from any production build (gated
+// by `import.meta.env.DEV`; the db mock additionally only reachable via a
+// DEV-gated dynamic import).
 //
 // Runs in the `postbuild` chain AFTER lift-subpath.mjs, so it scans the final
 // shipped tree. Source maps are skipped — they can legitimately contain the
@@ -13,7 +15,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const ROOT = "build/client";
-const SENTINEL = "__DEV_IDENTITY_MOCK__";
+const SENTINELS = ["__DEV_IDENTITY_MOCK__", "__DEV_DB_MOCK__"];
 const SCANNED = /\.(js|mjs|cjs|html)$/;
 
 async function* walk(dir) {
@@ -28,18 +30,19 @@ const leaked = [];
 for await (const file of walk(ROOT)) {
   if (!SCANNED.test(file)) continue;
   const content = await readFile(file, "utf8");
-  if (content.includes(SENTINEL)) leaked.push(file);
+  for (const sentinel of SENTINELS) {
+    if (content.includes(sentinel)) leaked.push({ file, sentinel });
+  }
 }
 
 if (leaked.length > 0) {
   console.error(
-    `[check-no-dev-mock] ⛔️ Dev identity mock leaked into the production build ❗️ \n` +
-      `⚠️ Found "${SENTINEL}" in:\n` +
-      leaked.map((f) => `  - ${f}`).join("\n") +
-      `\nThe mock must be dead-code-eliminated from prod (it's gated by ` +
+    `[check-no-dev-mock] ⛔️ A dev mock leaked into the production build ❗️ \n` +
+      leaked.map(({ file, sentinel }) => `  - "${sentinel}" in ${file}`).join("\n") +
+      `\nDev mocks must be dead-code-eliminated from prod (gated by ` +
       `import.meta.env.DEV). Aborting the build.`,
   );
   process.exit(1);
 }
 
-console.log(`[check-no-dev-mock] ✔ no dev identity mock found in ${ROOT}/.`);
+console.log(`[check-no-dev-mock] ✔ no dev mocks (${SENTINELS.join(", ")}) found in ${ROOT}/.`);

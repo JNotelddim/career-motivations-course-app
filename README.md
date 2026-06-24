@@ -53,6 +53,16 @@ Your own pace. Expect a solid 1/2-full day's effort for several of the modules; 
 Set deadlines for yourself that work for you.
 (Future feature: scheduled reminders)
 
+## Core features & how your data is handled
+
+The app renders each module's exercises as typed form controls and saves your answers as you type. A few deliberate decisions shape the experience — and they reinforce each other:
+
+- **A form control per exercise kind.** Short text, long text, a fixed matrix grid, and add/remove row-lists — each a controlled component, dispatched on the exercise's `kind`. There's no form-state *library*: state is a small React context with autosave, because there's no submit step for a library to manage.
+- **Advisory validation, never blocking.** Where it earns its keep, answers are validated — e.g. the Module 03 forced-ranking must be 1–8 with no ties; the Module 04 plan gauges 1–10 — and problems surface as hints beneath the field. Input is *never* blocked or discarded. This is a reflection tool; gating prose on a minimum length would fight its purpose.
+- **Your answers stay in your browser.** Worksheet answers are personal, and Metalab Sites' document DB has no per-user read security, so answers are persisted to `localStorage` and never leave your device.
+- **Progress is derived, not stored.** "Module N is complete" is *computed from your answers*, never tracked as a separate number. Storing a derived percentage would silently go stale the moment a module's exercise set changes; deriving from the source of truth can't.
+- **The document DB is reserved for exactly one job — an opt-in, encrypted backup.** This falls out of the two points above: progress is meaningless without the answers it derives from, and the answers are sensitive. So there is no server-side "progress" record to read — nobody could read it without already holding the answers. The *only* thing the DB is intended to hold (a future, opt-in feature) is an **encrypted** blob of your local data, which only you can decrypt and reload; progress is then re-derived client-side after a restore. This is also why the DB integration sits *off* the critical path for the core worksheet loop.
+
 ## Technical Setup
 - React via React-router (framework mode)
   - 🚀 SPA mode — `ssr: false` (static client build; no runtime server, since Metalab Sites is a static host)
@@ -66,7 +76,7 @@ Set deadlines for yourself that work for you.
 - Metalab Sites (2.0) https://sites.metalab.com/docs
   - Deployment via the Sites CLI (GitHub branch auto-deploy can't target a build sub-folder — see Deployment below)
   - User Identities via Okta Auth
-  - User-specific content stored in localStorage only, because Sites db doens't have user-specific read security, and the content of the worksheets is likely to be personal information.
+  - User-specific content stored in localStorage only, because Sites db doesn't have user-specific read security, and the content of the worksheets is likely to be personal information. (See [Core features & how your data is handled](#core-features--how-your-data-is-handled).)
 
 ### Local Development
 `npm install` > `npm run dev` : `http://localhost:5173`
@@ -110,6 +120,23 @@ platform root (404s locally) and the Okta session cookie is scoped to the deploy
 - **Why it can't ship:** the mock is fabricated data only (no real credential), and its injection is gated by
   `import.meta.env.DEV`, so it's dead-code-eliminated from production builds. `scripts/check-no-dev-mock.mjs` runs in
   `postbuild` and **fails the build** if the `__DEV_IDENTITY_MOCK__` sentinel ever survives into `build/client`.
+
+
+### Local document DB — mock `sites.db` (dev only)
+
+There's no Sites document DB on localhost, so `app/components/dev/sitesDbMock.ts` emulates `window.sites.db`
+faithfully to the v1 API (`collection().where/orderBy/limit/list`, `create/get/update/delete/deleteAll`, the
+collection-name regex, reserved-key stripping, the `limit` clamp, and the deterministic error codes).
+
+- **A swappable backing store behind an async seam.** A small `Store` interface separates the SDK surface from where
+  data actually lives. Today it's a `localStorage` adapter under a dedicated `sites-db-mock:` key namespace, kept
+  distinct from the app's own state so a "clear my data" action can target them separately. The planned next step is an
+  RxDB (IndexedDB) adapter — it drops in behind the same seam, which is async-first *precisely so* that swap needs no
+  contract change. (The DB's only real product use is the future opt-in encrypted backup — see
+  [Core features](#core-features--how-your-data-is-handled) — so RxDB is mostly a deliberate local-DB learning step.)
+- **Why it can't ship:** same story as the identity mock. It's attached via a `import.meta.env.DEV`-gated dynamic
+  `import()`, carries a `__DEV_DB_MOCK__` sentinel, and `scripts/check-no-dev-mock.mjs` fails the build if *either*
+  sentinel survives into `build/client`.
 
 
 ### Metalab Sites Deployment
