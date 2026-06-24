@@ -47,6 +47,18 @@ const AnswerStateContext = React.createContext<AnswerStateContextType | null>(nu
 
 
 /**
+ * Parse stored answers, reviving `created`/`lastEdited` back into `Date` objects.
+ * JSON.stringify serializes Dates to ISO strings, so without this they'd rehydrate
+ * as strings despite the `Date` type — breaking any later `.getTime()`/formatting.
+ */
+const parseStoredAnswers = (raw: string): Record<string, AnswerValue> =>
+    JSON.parse(raw, (key, value) =>
+        (key === "created" || key === "lastEdited") && typeof value === "string"
+            ? new Date(value)
+            : value,
+    );
+
+/**
  * Save an answer to localStorage.
  */
 const saveToLocalStorage = (questionId: string, answer: AnswerValue) => {
@@ -67,7 +79,7 @@ export const AnswerStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
         // Load answers from localStorage on mount
         const storedAnswers = localStorage.getItem("answers");
         if (storedAnswers) {
-            setAnswers(JSON.parse(storedAnswers));
+            setAnswers(parseStoredAnswers(storedAnswers));
         }
     }, []);
 
