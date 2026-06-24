@@ -132,8 +132,7 @@ export function Module() {
 
                           {exercise.kind === ExerciseKind.MATRIX && (
                             <Matrix
-                                // TODO: fix typing
-                                value={(moduleAnswers[exercise.id]?.value as Record<string, string>) || ""}
+                                value={(moduleAnswers[exercise.id]?.value as Record<string, string>) || {}}
                                 rows={exercise.rows || []}
                                 columns={exercise.columns || []}
                                 onChange={(newValue) => {
