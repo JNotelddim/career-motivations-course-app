@@ -1,9 +1,29 @@
 import { useNavigate } from "react-router";
-import { Button, Link } from "../base";
+import { Button, Link, ModuleStatusBadge } from "../base";
 import { ROUTES } from "~/consts/routes";
+import { MODULES } from "~/consts/modules";
+import { useAnswerState } from "../providers/answerStateProvider";
+import { moduleProgress } from "~/lib/progress";
+
+// Bespoke one-line blurbs for the overview — punchier than each module's own
+// `description`, kept as view copy and keyed to the real module ids.
+const MODULE_BLURBS: Record<number, React.ReactNode> = {
+  1: <><strong>Contracting</strong> — name the actual question, and what "better" looks like.</>,
+  2: <><strong>Self-knowledge</strong> — energy/dread audit, lifeline, workview/lifeview.</>,
+  3: <><strong>Motivators &amp; Anchors</strong> — what you won't trade away (Schein) + strengths.</>,
+  4: <><strong>Vision &amp; Odyssey Plans</strong> — three divergent 5-year futures.</>,
+  5: <><strong>Current-state audit</strong> — a mini-360 + an honest read of where you are now.</>,
+  6: <><strong>Gap analysis</strong> — current vs. target, crossed with feedback.</>,
+  7: <><strong>Development plan</strong> — a few declared behaviors, with feedforward.</>,
+  8: <><strong>Visibility &amp; influence</strong> — stakeholder map, sphere of influence.</>,
+  9: <><strong>Decision-making under ambiguity</strong> — prototype conversations &amp; experiences.</>,
+  10: <><strong>Sustainment &amp; energy</strong> — recovery design, early-warning signals, non-negotiables.</>,
+  11: <><strong>Review &amp; re-contract</strong> — what evidence pivots vs. persists.</>,
+};
 
 export function Welcome() {
   const navigate = useNavigate();
+  const { answers } = useAnswerState();
 
   return (
     <main className="flex flex-col items-start justify-center gap-4 p-8 max-w-3xl mx-auto">
@@ -28,18 +48,15 @@ export function Welcome() {
   <h2 className="text-xl font-bold sm:text-2xl mt-8">The modules</h2>
 
   <ol className="list-decimal list-inside space-y-1.5 leading-relaxed">
-    {/** TODO: map from modules const */}
-    <li><Link to="/module/1"><strong>Contracting</strong> — name the actual question, and what "better" looks like.</Link></li>
-    <li><Link to="/module/2"><strong>Self-knowledge</strong> — energy/dread audit, lifeline, workview/lifeview.</Link></li>
-    <li><Link to="/module/3"><strong>Motivators &amp; Anchors</strong> — what you won't trade away (Schein) + strengths.</Link></li>
-    <li><Link to="/module/4"><strong>Vision &amp; Odyssey Plans</strong> — three divergent 5-year futures.</Link></li>
-    <li><Link to="/module/5"><strong>Current-state audit</strong> — a mini-360 + an honest read of where you are now.</Link></li>
-    <li><Link to="/module/6"><strong>Gap analysis</strong> — current vs. target, crossed with feedback.</Link></li>
-    <li><Link to="/module/7"><strong>Development plan</strong> — a few declared behaviors, with feedforward.</Link></li>
-    <li><Link to="/module/8"><strong>Visibility &amp; influence</strong> — stakeholder map, sphere of influence.</Link></li>
-    <li><Link to="/module/9"><strong>Decision-making under ambiguity</strong> — prototype conversations &amp; experiences.</Link></li>
-    <li><Link to="/module/10"><strong>Sustainment &amp; energy</strong> — recovery design, early-warning signals, non-negotiables.</Link></li>
-    <li><Link to="/module/11"><strong>Review &amp; re-contract</strong> — what evidence pivots vs. persists.</Link></li>
+    {MODULES.map((module) => (
+      <li key={module.id}>
+        <Link to={`/module/${module.id}`}>{MODULE_BLURBS[module.id]}</Link>
+        <ModuleStatusBadge
+          state={moduleProgress(module, answers).state}
+          className="ml-2 align-middle"
+        />
+      </li>
+    ))}
   </ol>
 
   <div className="mt-4">
