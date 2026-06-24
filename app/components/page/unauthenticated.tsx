@@ -6,12 +6,12 @@ export function Unauthenticated() {
     <main className="flex flex-col items-start justify-center gap-4 p-8 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold sm:text-3xl">We couldn't sign you in</h1>
 
-      <p className="text-md sm:text-lg">
+      <p className="text-base sm:text-lg leading-relaxed text-gray-700">
         Your authentication details didn't come through, so we can't let you into
         the app right now.
       </p>
 
-      <p className="text-md sm:text-lg">
+      <p className="text-base sm:text-lg leading-relaxed text-gray-700">
         If you believe you should have access, reach out to Jared — or contact IT
         for Okta support if you need help signing in.
       </p>

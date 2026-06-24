@@ -1,6 +1,7 @@
 import cn from "classnames";
+import { FIELD_CLASS } from "./styles";
 
-// Basic 
+// Basic
 export const TextInput: React.FC<{
     value: string;
     onChange: (newValue: string) => void;
@@ -25,7 +26,7 @@ export const TextInput: React.FC<{
                 }
             }}
             placeholder={placeholder}
-            className={cn("border rounded p-2", className)}
+            className={cn(FIELD_CLASS, className)}
         />
         </div>
     );

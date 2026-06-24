@@ -151,7 +151,7 @@ export function useAuth(): AuthState {
 function AuthLoadingScreen() {
   return (
     <main className="flex min-h-screen items-center justify-center p-8">
-      <p className="text-md sm:text-lg">Signing you in…</p>
+      <p className="text-base sm:text-lg">Signing you in…</p>
     </main>
   );
 }
