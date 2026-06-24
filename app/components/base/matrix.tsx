@@ -20,7 +20,6 @@ export const Matrix: React.FC<{
   onChange: (newValue: Record<string, string>) => void;
   className?: string;
 }> = ({ rows, columns, value, onChange, className }) => {
-  console.log("Matrix value:", value, columns, rows);
   const cellKey = (rowIndex: number, columnId: string) =>
     `${rowIndex}::${columnId}`;
 
@@ -39,11 +38,6 @@ export const Matrix: React.FC<{
           Error: No rows or columns defined for this matrix.
         </p>
       )}
-      {/* {!value && (
-        <p className="text-md sm:text-lg">
-          Error: No value provided for this matrix.
-        </p>
-      )} */}
 
       {rows.length > 0 && columns.length > 0 && (
         <table className="w-full border-collapse text-sm">
