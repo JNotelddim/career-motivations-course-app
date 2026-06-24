@@ -19,7 +19,7 @@ export type LongTextAnswer = {
 }
 
 export type MatrixAnswer = {
-    value: Record<string, number>;
+    value: Record<string, string>;
     kind: ExerciseKind.MATRIX;
     isComplete: boolean;
     created: Date;

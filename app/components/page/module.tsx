@@ -134,7 +134,7 @@ export function Module() {
                           {exercise.kind === ExerciseKind.MATRIX && (
                             <Matrix
                                 // TODO: fix typing
-                                value={(moduleAnswers[exercise.id]?.value as string) || ""}
+                                value={(moduleAnswers[exercise.id]?.value as Record<string, string>) || ""}
                                 rows={exercise.rows || []}
                                 columns={exercise.columns || []}
                                 onChange={(newValue) => {
@@ -147,7 +147,6 @@ export function Module() {
                                     };
                                     save(exercise.id, newAnswer);
                                 }}
-                                placeholder="Type your answer here..."
                             />
                           )}
 
