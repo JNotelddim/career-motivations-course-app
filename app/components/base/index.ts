@@ -1,5 +1,7 @@
 export * from "./banner";
 export * from "./button";
+export * from "./moduleStatusBadge";
+export * from "./progressBar";
 export * from "./styles";
 export * from "./link";
 export * from "./textInput";

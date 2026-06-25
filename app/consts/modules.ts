@@ -32,6 +32,8 @@ export type Exercise = {
     id: string;
     prompt: string;
     guidance?: string; // the "question-specific prompt" — explanatory context distinct from the ask
+    optional?: boolean; // absent/false = required. Required exercises define module completion;
+                        // optional ones never count toward 100% (see app/lib/progress.ts).
 } & (
     | { kind: ExerciseKind.SHORT_TEXT; validation?: TextValidation }
     | { kind: ExerciseKind.LONG_TEXT; validation?: TextValidation }
@@ -137,7 +139,7 @@ const MODULE_3: WorksheetModule = {
             title: "Differentiation aids (optional)",
             description: "Use only if forced ranking feels impossible — surface cost through paired comparison, 100-point allocation, sacrifice scenarios, or the official Schein Career Orientations Inventory.",
             exercises: [
-                { id: "m03-aids", kind: ExerciseKind.LONG_TEXT, prompt: "Work through whichever differentiation aid(s) you need, and capture the result.", guidance: "Most decisive is the official COI; paired comparison (28 pairs) is the most thorough by hand. (A richer structured control for these is a future refinement.)" },
+                { id: "m03-aids", optional: true, kind: ExerciseKind.LONG_TEXT, prompt: "Work through whichever differentiation aid(s) you need, and capture the result.", guidance: "Most decisive is the official COI; paired comparison (28 pairs) is the most thorough by hand. (A richer structured control for these is a future refinement.)" },
             ],
         },
         {

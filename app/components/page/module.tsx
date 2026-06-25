@@ -5,8 +5,9 @@ import { useEffect } from "react";
 import { ROUTES } from "~/consts/routes";
 import { useAnswerState, type LongTextAnswer, type MatrixAnswer, type RowListAnswer, type ShortTextAnswer } from "../providers/answerStateProvider";
 import { TextInput } from "../base/textInput";
-import { Banner, Matrix, RowList, TextArea, type RowListRow } from "../base";
+import { Banner, Matrix, ProgressBar, RowList, TextArea, type RowListRow } from "../base";
 import { validateAnswer } from "~/lib/validation";
+import { moduleProgress } from "~/lib/progress";
 
 const firstModuleId = MODULES[0].id;
 const lastModuleId = MODULES[MODULES.length - 1].id;
@@ -35,6 +36,9 @@ export function Module() {
 
     // TODO: consider performance implications of this - should it be memoized?
     const moduleAnswers = getModuleState(moduleId);
+
+    const moduleDefinition = MODULES[moduleId - 1];
+    const progress = moduleDefinition ? moduleProgress(moduleDefinition, answers) : null;
 
     const isNextModuleEnabled = moduleId !== undefined && moduleId < lastModuleId;
     const isPrevModuleEnabled = moduleId !== undefined && moduleId > firstModuleId;
@@ -69,6 +73,17 @@ export function Module() {
 
     <h1 className="text-2xl font-bold sm:text-3xl">Module {moduleId}: {title} </h1>
 
+    {progress && (
+      <ProgressBar
+        value={progress.percent}
+        complete={progress.state === "complete"}
+        label={
+          progress.state === "complete"
+            ? `Module complete — all ${progress.requiredTotal} required exercises done`
+            : `${Math.round(progress.percent * 100)}% complete — ${progress.requiredDone} of ${progress.requiredTotal} required exercises`
+        }
+      />
+    )}
 
     <div className="w-full flex justify-between">
         <Button onClick={handlePrevModuleNav} disabled={!isPrevModuleEnabled}>&larr; Previous</Button>
@@ -110,7 +125,14 @@ export function Module() {
                   <div className="flex flex-col gap-6">
                   {section.exercises.map((exercise) => (
                       <div key={exercise.id} className="flex flex-col gap-1.5">
-                          <p className="font-medium">{exercise.prompt}</p>
+                          <p className="font-medium">
+                              {exercise.prompt}
+                              {exercise.optional && (
+                                  <span className="ml-2 inline-block rounded-full bg-gray-100 px-2 py-0.5 align-middle text-xs font-medium text-gray-500">
+                                      Optional
+                                  </span>
+                              )}
+                          </p>
 
                           {exercise.kind === ExerciseKind.SHORT_TEXT && (
                             <TextInput
