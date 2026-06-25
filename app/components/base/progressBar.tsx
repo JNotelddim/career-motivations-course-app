@@ -8,7 +8,9 @@ export const ProgressBar: React.FC<{
   className?: string;
   /** When true, the fill turns green to signal completion. */
   complete?: boolean;
-}> = ({ value, className, complete }) => {
+  /** Human-readable status for screen readers (the bar is otherwise label-less). */
+  label?: string;
+}> = ({ value, className, complete, label }) => {
   const pct = Math.round(Math.max(0, Math.min(1, value)) * 100);
   return (
     <div
@@ -16,6 +18,8 @@ export const ProgressBar: React.FC<{
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}
+      aria-valuetext={label ?? `${pct}%`}
+      aria-label={label}
       className={cn("h-2 w-full overflow-hidden rounded-full bg-gray-200", className)}
     >
       <div
