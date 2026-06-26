@@ -5,20 +5,20 @@ import { MODULES } from "~/consts/modules";
 import { useAnswerState } from "../providers/answerStateProvider";
 import { moduleProgress } from "~/lib/progress";
 
-// Bespoke one-line blurbs for the overview — punchier than each module's own
+// Bespoke one-line blurbs for the overview : punchier than each module's own
 // `description`, kept as view copy and keyed to the real module ids.
 const MODULE_BLURBS: Record<number, React.ReactNode> = {
-  1: <><strong>Contracting</strong> — name the actual question, and what "better" looks like.</>,
-  2: <><strong>Self-knowledge</strong> — energy/dread audit, lifeline, workview/lifeview.</>,
-  3: <><strong>Motivators &amp; Anchors</strong> — what you won't trade away (Schein) + strengths.</>,
-  4: <><strong>Vision &amp; Odyssey Plans</strong> — three divergent 5-year futures.</>,
-  5: <><strong>Current-state audit</strong> — a mini-360 + an honest read of where you are now.</>,
-  6: <><strong>Gap analysis</strong> — current vs. target, crossed with feedback.</>,
-  7: <><strong>Development plan</strong> — a few declared behaviors, with feedforward.</>,
-  8: <><strong>Visibility &amp; influence</strong> — stakeholder map, sphere of influence.</>,
-  9: <><strong>Decision-making under ambiguity</strong> — prototype conversations &amp; experiences.</>,
-  10: <><strong>Sustainment &amp; energy</strong> — recovery design, early-warning signals, non-negotiables.</>,
-  11: <><strong>Review &amp; re-contract</strong> — what evidence pivots vs. persists.</>,
+  1: <><strong>Name the question</strong> : your real question, and what good looks like</>,
+  2: <><strong>Know yourself</strong> : energy, history, and how you see work</>,
+  3: <><strong>What drives you</strong> : your non-negotiables and strengths</>,
+  4: <><strong>Imagine possible futures</strong> : three divergent five-year paths</>,
+  5: <><strong>Where you are now</strong> : an honest self-read plus peer feedback</>,
+  6: <><strong>Find the gaps</strong> : current vs. target, a few focus areas</>,
+  7: <><strong>Make a plan</strong> : focus areas into concrete behaviors</>,
+  8: <><strong>Build visibility &amp; influence</strong> : key stakeholders and your impact</>,
+  9: <><strong>Test your big questions</strong> : big questions into small experiments</>,
+  10: <><strong>Sustain your energy</strong> : recovery, warning signs, non-negotiables</>,
+  11: <><strong>Review &amp; adjust</strong> : what holds up, what changes</>,
 };
 
 export function Welcome() {
@@ -34,27 +34,34 @@ export function Welcome() {
     <h1 className="text-2xl font-bold sm:text-3xl">Career Self-Reflection & Motivations App</h1>
 
   <p className="text-base sm:text-lg leading-relaxed text-gray-700">
-    A self-directed career-coaching workflow: a structured set of worksheets for
-    answering "what actually drives me, and where am I going?" — filled in at your
-    own pace.
+    Get clear on what actually drives you at work. Turn that clarity into a
+    concrete sense of where you're headed and how to get there.
+    This is a structured set of reflective worksheets you fill in privately,
+     at your own pace.
   </p>
 
   <p className="text-base sm:text-lg leading-relaxed text-gray-700">
-    Currently oriented towards Senior Engineers, given the resources and the
-    structure of the questions. Each person fills in their own private copy: the
-    framework ships empty, and your answers stay yours.
+    It's not a test or a performance review, and nobody else sees your answers.
+    There are no scores and no right answers. Just better questions.
+  </p>
+
+  <p className="text-base sm:text-lg leading-relaxed text-gray-700">
+    It's currently oriented toward senior engineers, given the resources and the
+    shape of the questions. But anyone is welcome to work through it.
   </p>
 
   <h2 className="text-xl font-bold sm:text-2xl mt-8">The modules</h2>
 
-  <ol className="list-decimal list-inside space-y-1.5 leading-relaxed">
+  <ol className="list-decimal pl-5 space-y-1.5 leading-relaxed w-full">
     {MODULES.map((module) => (
       <li key={module.id}>
-        <Link to={`/module/${module.id}`}>{MODULE_BLURBS[module.id]}</Link>
-        <ModuleStatusBadge
-          state={moduleProgress(module, answers).state}
-          className="ml-2 align-middle"
-        />
+        <div className="flex items-baseline justify-between gap-3">
+          <Link to={`/module/${module.id}`}>{MODULE_BLURBS[module.id]}</Link>
+          <ModuleStatusBadge
+            state={moduleProgress(module, answers).state}
+            className="shrink-0 self-center"
+          />
+        </div>
       </li>
     ))}
   </ol>

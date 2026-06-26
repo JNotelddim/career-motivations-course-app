@@ -90,9 +90,13 @@ export function Module() {
         <Button onClick={handleNextModuleNav} disabled={!isNextModuleEnabled}>Next &rarr;</Button>
     </div>
 
-  <p className="text-base sm:text-lg leading-relaxed text-gray-700">
-    {description}
-  </p>
+  <div className="flex flex-col gap-3">
+    {description.split("\n\n").map((paragraph, index) => (
+      <p key={index} className="text-base sm:text-lg leading-relaxed text-gray-700">
+        {paragraph}
+      </p>
+    ))}
+  </div>
 
     <h2 className="text-xl font-semibold mt-6"> Resources </h2>
 
