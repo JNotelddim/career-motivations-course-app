@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router";
 
 import { MODULES } from "~/consts/modules";
 import { Banner, Button } from "~/components/base";
@@ -32,8 +33,12 @@ const moduleTitle = (id: number) => MODULES.find((m) => m.id === id)?.title ?? `
  */
 export const RestoreCard: React.FC<{ email: string }> = ({ email }) => {
   const { answers } = useAnswerState();
+  const location = useLocation();
 
-  const [open, setOpen] = useState(false);
+  // The sign-in restore nudge links here with this state to open the form directly.
+  const arrivedToRestore = Boolean((location.state as { openRestore?: boolean } | null)?.openRestore);
+
+  const [open, setOpen] = useState(arrivedToRestore);
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);

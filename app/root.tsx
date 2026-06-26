@@ -12,6 +12,7 @@ import { AuthProvider } from "./components/providers/authProvider";
 import { DevIdentityMock } from "./components/dev/devIdentityMock";
 import "./app.css";
 import { AnswerStateProvider } from "./components/providers/answerStateProvider";
+import { RestoreNudge } from "./components/backup";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -58,6 +59,7 @@ export default function App() {
       {import.meta.env.DEV && <DevIdentityMock />}
       <AuthProvider>
         <AnswerStateProvider>
+          <RestoreNudge />
           <Outlet />
         </AnswerStateProvider>
       </AuthProvider>
