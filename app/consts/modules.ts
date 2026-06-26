@@ -70,7 +70,8 @@ const SCHEIN_ANCHORS = [
 const MODULE_1: WorksheetModule = {
     id: 1,
     title: "Name the question",
-    description: "Name your questions and what 'ideal' looks like.",
+    description:
+        "Before diving into self-assessment, get clear on the actual question you're here to answer. This module is a contract with yourself: name the decision or uncertainty that actually matters to you, whether that's deepening your craft or broadening your scope, building or leading, or whether your current path still fits, and decide how you'll know the work paid off. A vague goal like 'figure out my career' produces vague answers; a sharp question gives every later module something concrete to aim at.\n\nThe two references frame the approach. The ICF coaching model calls this 'establishing the agreement,' the step good coaches never skip: settle up front on what you're working on and what success looks like, so the rest of the work stays honest to it. Designing Your Life sharpens it with a single question, 'what problem are you really trying to solve?', a guard against pouring months into the wrong one. You'll also name the question that's easy to circle without quite putting into words, and set the trigger for when it's worth revisiting this contract.",
     prereqs: [],
     resources: [
         { title: "ICF Core Competencies — Establishing the Coaching Agreement", url: "https://coachingfederation.org/credentialing/coaching-competencies/icf-core-competencies/", price: "free" },
@@ -92,7 +93,8 @@ const MODULE_1: WorksheetModule = {
 const MODULE_2: WorksheetModule = {
     id: 2,
     title: "Know yourself",
-    description: "Energy/dread audit, lifeline, workview/lifeview.",
+    description:
+        "With your question named, this module gathers the raw material to answer it: honest evidence about how you actually work and what you actually value. Most career thinking runs on assumptions and half-remembered highlights, and this module replaces those with something closer to data. You'll articulate what you believe work and life are for, then look for where those two beliefs reinforce each other and where they pull apart. The point isn't tidy answers, it's noticing the patterns you usually move too fast to see.\n\nTwo Designing Your Life tools do the work. The Workview and Lifeview essays ask you to write, independently, what work is for and what life is for, then read them side by side; the friction between them is often where the useful insight lives. The Good Time Journal turns attention to energy: a short daily note over two weeks surfaces which moments engage you and which drain you, in your own real week rather than in the abstract. A lifeline of career peaks and valleys rounds it out, with one honest annotation on what actually made the peaks peaks. Together they give the later modules something concrete to build on.",
     prereqs: [],
     resources: [
         { title: "Designing Your Life — Workview & Lifeview essays", url: "http://lifedesignlab.stanford.edu/dyl", price: "free" },
