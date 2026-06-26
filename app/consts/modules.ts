@@ -182,7 +182,8 @@ const planExercises = (plan: "a" | "b" | "c"): Exercise[] => [
 const MODULE_4: WorksheetModule = {
     id: 4,
     title: "Imagine possible futures",
-    description: "Three divergent 5-year futures (Designing Your Life Odyssey Plans).",
+    description:
+        "Self-knowledge in hand, this module widens the aperture: instead of optimizing the one path you're already on, you sketch several you could plausibly take. Imagining real alternatives loosens the grip of the default and makes the eventual choice an actual choice rather than a drift. You'll build three five-year futures that genuinely diverge, give each a headline and a typical week, and weigh what each one gains and gives up. The aim isn't to crown a winner yet; it's to see your options clearly enough to know which are worth testing.\n\nDesigning Your Life's Odyssey Plans provide the structure: three parallel lives, not three variations on one. Plan A is your current trajectory pursued with intent, Plan B a credible adjacent shift, and Plan C the version you'd chase if money and title were no object. To keep these concrete rather than daydreams, you'll name the senior-engineer or manager-track archetype each plan points to (drawing on Reilly's The Staff Engineer's Path and Fournier's The Manager's Path) and gauge each on confidence, resources, appeal, and fit with your top anchors. A short synthesis pulls out the common threads and the open questions most worth chasing first.",
     prereqs: [2, 3],
     resources: [
         { title: "Designing Your Life — Odyssey Plans", url: "http://lifedesignlab.stanford.edu/dyl", price: "free" },
@@ -205,7 +206,8 @@ const MODULE_4: WorksheetModule = {
 const MODULE_5: WorksheetModule = {
     id: 5,
     title: "Where you are now",
-    description: "A mini-360 + senior-IC archetype check on how the role actually works today.",
+    description:
+        "The earlier modules looked inward; this one gets an outside read. Before planning where to go, you need an honest, evidence-based picture of where you actually are and how your role really works day to day. Your own view and other people's rarely match exactly, and the gap between them is some of the most useful information you'll get. You'll estimate how your time actually splits across the shapes of senior work, then gather candid input from a handful of people who see you in action.\n\nTwo tools structure it. A light self-audit borrows the senior-engineer archetypes (Tech Lead, Architect, Solver, Right Hand) to ask what your work actually consists of versus what the role intends. Then a mini-360, built on Marshall Goldsmith's stakeholder-centered approach, asks three to five trusted colleagues a short, consistent set of questions: what to keep doing, start, and stop, plus a strength they think you underuse. The closing step reconciles it all: what two or more people independently flag is signal; a lone comment is information, not a verdict; and any divergence from your anchors and self-read is exactly where the reflection lives.",
     prereqs: [3],
     resources: [
         { title: "Marshall Goldsmith — Stakeholder-Centered Coaching", url: "https://www.marshallgoldsmith.com/", price: "free" },
@@ -238,7 +240,8 @@ const MODULE_5: WorksheetModule = {
 const MODULE_6: WorksheetModule = {
     id: 6,
     title: "Find the gaps",
-    description: "Cross a competency model with your 360 + self-rating to pick 2–3 focus areas.",
+    description:
+        "Now the inward picture (what drives you, what you're good at) meets the outward one (how others see you) against a concrete standard. This module turns all of that into focus: a short list of areas genuinely worth developing. The discipline here is filtering. Plenty of things could be improved; the goal is the two or three that actually matter for where you want to go and are realistically developable in the next several months.\n\nYou'll anchor the comparison to a real competency ladder, either your role's official one or the closest public equivalent (progression.fyi collects many). Rate yourself against it, reconcile that with the 360 from the previous module, and you have your candidate gaps. Then comes the filter that makes this useful: for each gap, does it matter given your anchors and the Odyssey path you're aiming at? The output is a deliberately small set, two or three competencies where the gap is real, the importance is clear, and meaningful progress is achievable in six to twelve months.",
     prereqs: [3, 4, 5],
     resources: [
         { title: "progression.fyi — public-company engineering ladders", url: "https://www.progression.fyi/", price: "free" },
@@ -260,7 +263,8 @@ const MODULE_6: WorksheetModule = {
 const MODULE_7: WorksheetModule = {
     id: 7,
     title: "Make a plan",
-    description: "Turn focus competencies into 1–2 declared behaviors, with feedforward (Goldsmith).",
+    description:
+        "Focus areas are still abstractions; this module turns them into something you can actually practice and be seen improving at. The shift is from competency to behavior: not 'get better at strategic communication' but a specific, observable thing you'll do differently, in a real context, that others would notice. Plans fail when they stay vague, so the work here is making yours concrete and small enough to sustain.\n\nThe method is Marshall Goldsmith's stakeholder-centered coaching. You'll translate each focus area into one or two observable behaviors, then declare them to the few colleagues positioned to notice, asking not for feedback on the past but feedforward: one or two things you could do differently next time. Lightweight check-ins keep it honest over the following months, a quick daily self-rating tracks the trend rather than the score, and a couple of short pulse-checks with the same group confirm whether the change is landing. Declaring it out loud is a lot of what makes it stick.",
     prereqs: [6],
     resources: [
         { title: "Marshall Goldsmith — Stakeholder-Centered Coaching, the 9 steps", url: "https://knowledgebank.mgscc.net/9-steps-in-marshall-goldsmiths-coaching-process/", price: "free" },
@@ -288,7 +292,8 @@ const MODULE_7: WorksheetModule = {
 const MODULE_8: WorksheetModule = {
     id: 8,
     title: "Build visibility & influence",
-    description: "Map stakeholders, sphere of influence, and your manager-Voltron.",
+    description:
+        "Good work doesn't speak for itself, and senior impact depends as much on relationships and reach as on the work itself. This module maps the human system around your role: who shapes your next six months, who you can call when something's strange, and where you're spending energy on things you can't actually move. The aim is to invest your attention where it has leverage and stop pouring it where it doesn't.\n\nThe frame comes from Lara Hogan. A stakeholder map names the people who matter to your work (the buyers, blockers, beneficiaries, and skip-levels) and where each relationship needs attention. A 'manager Voltron' audit checks whether you've built the cross-functional set of peers you can lean on when things get strange. Sphere mapping sorts your current concerns into control, influence, and merely concern, so you can act on the first two and let go of the third. A final pass on radiating intent makes sure the people who should hear about your in-flight work hear it from you first.",
     prereqs: [],
     resources: [
         { title: "Lara Hogan — Manager Voltron", url: "https://larahogan.me/voltron/", price: "free" },
@@ -310,7 +315,8 @@ const MODULE_8: WorksheetModule = {
 const MODULE_9: WorksheetModule = {
     id: 9,
     title: "Test your big questions",
-    description: "Shrink big career questions into the smallest belief-updating experiments.",
+    description:
+        "By now you've surfaced a pile of open questions, the kind that feel too big to answer from the armchair. This module shrinks them. Instead of agonizing toward a perfect decision, you turn each question into a small, low-cost test that nudges your belief one way or the other. Most career questions feel irreversible and momentous; most are neither, and treating them as experiments takes a lot of the paralysis out.\n\nTwo ideas drive it. From Annie Duke's decision work, you sort each question into genuinely irreversible (rare) versus reversible (most), which changes how much deliberation it really deserves. From Designing Your Life, you prototype: a conversation with someone already living the thing, or the smallest real version of the experience you can run in a few weeks. The key discipline is deciding in advance what evidence would actually change your mind, written down before you run the test, so the result informs you rather than getting explained away after the fact.",
     prereqs: [4],
     resources: [
         { title: "Designing Your Life — Prototype Conversations & Prototype Experiences", url: "http://lifedesignlab.stanford.edu/dyl", price: "free" },
@@ -333,7 +339,8 @@ const MODULE_9: WorksheetModule = {
 const MODULE_10: WorksheetModule = {
     id: 10,
     title: "Sustain your energy",
-    description: "Design recovery, early-warning signals, and non-negotiables to sustain the plan.",
+    description:
+        "A plan you can't sustain isn't a plan. This module is about durability: making sure the direction you've set survives contact with real workload, stress, and the long arc of months. It's less about pushing harder and more about protecting the conditions that let you keep showing up well. You'll get specific about your own early signs of depletion, what genuinely restores you, and the few things you can't let slide without paying for it later.\n\nTwo references ground it. Lara Hogan's work on energy and resilience treats recovery as something you design and fund deliberately, distinguishing passive rest from the active recovery that actually puts energy back. The Demand-Resource model (Bakker and Demerouti) frames burnout as a chronic gap between what a role demands and the resources that offset it, so you'll map your high-demand axes against the autonomy, support, and recovery available to balance them. The module ends in commitments: your non-negotiables, named, and the agreements and people that will help protect them.",
     prereqs: [],
     resources: [
         { title: "Lara Hogan — Resilience funding & energy stewardship", url: "https://larahogan.me/", price: "free" },
@@ -356,7 +363,8 @@ const MODULE_10: WorksheetModule = {
 const MODULE_11: WorksheetModule = {
     id: 11,
     title: "Review & adjust",
-    description: "Review the arc against your contract — what evidence pivots vs. persists?",
+    description:
+        "This isn't a one-time exercise, and the final module makes it a loop. You return to the contract you wrote at the start and check the whole arc against it: is the question you set out to answer still the right one, and has the work actually moved you? Careers don't hold still, so the value is in revisiting deliberately rather than letting the plan quietly go stale. You can run this lightly each quarter and more fully once a year.\n\nThe framing draws on the ICF's practice of evaluating progress and, when the time is right, closing out a piece of work. You'll re-read your original contract and judge whether its success signal has arrived, partly arrived, or shifted; walk each completed module and note whether its output is holding up; and for each focus area decide whether to keep going, adjust, or set it down. That last call leans on Annie Duke's work on knowing when to stop: persistence is a virtue only while the thing is still worth pursuing, and recognizing when it isn't is its own skill.",
     prereqs: [1],
     resources: [
         { title: "ICF Core Competencies — Evaluating Progress & Concluding the Coaching Process", url: "https://coachingfederation.org/credentialing/coaching-competencies/icf-core-competencies/", price: "free" },
