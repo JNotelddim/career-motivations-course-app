@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { Button } from "../base";
+import { BackupPanel } from "../backup";
 import { useAuth } from "../providers/authProvider";
 import { ROUTES } from "~/consts/routes";
 
@@ -8,7 +9,7 @@ export function Account() {
   const auth = useAuth();
 
   return (
-    <main className="flex flex-col items-start justify-center gap-4 p-8 max-w-3xl mx-auto">
+    <main className="flex flex-col items-start justify-center gap-6 p-8 max-w-3xl mx-auto">
 
     <div className="flex w-full">
       <Button onClick={()=> navigate(ROUTES.home)} > Home 🏠</Button>
@@ -17,11 +18,15 @@ export function Account() {
     <h1 className="text-2xl font-bold sm:text-3xl">Account</h1>
 
     {auth.status === "authenticated" && auth.user && (
-      <div>
-        <p>Name: {auth.user.name}</p>
-        <p>Email: {auth.user.email}</p>
-      
-        <p>TODO: session history, CTAs for: data deletion, data backup, data download</p>
+      <div className="flex w-full flex-col gap-6">
+        <div>
+          <p>Name: {auth.user.name}</p>
+          <p>Email: {auth.user.email}</p>
+        </div>
+
+        <BackupPanel email={auth.user.email} />
+
+        {/* TODO: session history, data deletion, data download CTAs */}
       </div>
     )}
 
