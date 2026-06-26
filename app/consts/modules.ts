@@ -122,7 +122,8 @@ const MODULE_2: WorksheetModule = {
 const MODULE_3: WorksheetModule = {
     id: 3,
     title: "What drives you",
-    description: "Schein anchors forced-rank + a strengths inventory — name what you'd refuse to trade away.",
+    description:
+        "This is the core of the whole sequence: getting clear on what actually drives you, and what you'd be reluctant to give up even under pressure. It's easy to say you value everything, so the work here is making the trade-offs that reveal what you truly prioritize. You'll rank your motivators against each other, pressure-test that ranking against decisions you've actually made, and check how much room your current role gives the ones that matter most. Your strengths get the same honest look: what you're genuinely good at, and where it's well used versus where it isn't yet.\n\nSchein's Career Anchors supplies the backbone. An 'anchor' is the thing you won't trade away when forced to choose, and the method is deliberately uncomfortable: rank all eight from most to least with no ties, because the friction of separating close calls is where the signal lives. You then test that ranking against real decisions, since what drives you shows up in behavior more honestly than in self-report. For strengths, CliftonStrengths or the free VIA inventory names your top themes. The module closes with a one-sentence statement of what drives you, plus the non-negotiables you'll carry into every later module.",
     prereqs: [],
     resources: [
         { title: "Schein — Career Anchors (self-administration workbook, Wiley)", price: "~$25" },
