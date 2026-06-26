@@ -43,6 +43,18 @@ type AnswerStateContextType = {
     getModuleState: (moduleId: number) => Record<string, AnswerValue>;
 }
 
+// DEV-ONLY HMR NOTE — you may occasionally see
+// "useAnswerState must be used within an AnswerStateProvider" after a hot update
+// while editing UI. Cause: this module exports a mix (component + hook + types),
+// so it isn't a clean React Fast Refresh boundary. An update re-evaluates it,
+// re-runs createContext, and mints a NEW context object; the already-mounted
+// provider keeps the OLD object while the refreshed consumer reads the NEW one,
+// so useContext returns this null default and the guard in useAnswerState throws.
+// Production never re-evaluates modules, so it cannot happen there — it's purely a
+// dev nuisance cleared by a full reload.
+// POTENTIAL FIX (Option B, not yet done): move createContext into its own module
+// that UI edits never touch (stable identity), and keep this file exporting only
+// the AnswerStateProvider component (relocate the hook + types).
 const AnswerStateContext = React.createContext<AnswerStateContextType | null>(null);
 
 
