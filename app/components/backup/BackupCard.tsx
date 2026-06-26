@@ -7,6 +7,7 @@ import { MIN_PASSWORD_LENGTH, passwordStrength } from "~/lib/backup/passwordStre
 import { buildProgressSnapshot, compareProgress } from "~/lib/backup/snapshot";
 import { loadBackup, upsertBackup, type StoredBackup } from "~/lib/backup/store";
 import { PasswordInput } from "./PasswordInput";
+import { waitForSitesDb } from "./waitForSitesDb";
 
 type Status = "idle" | "saving" | "error";
 
@@ -30,13 +31,16 @@ export const BackupCard: React.FC<{ email: string }> = ({ email }) => {
   const [error, setError] = useState<string | null>(null);
 
   // Load any existing backup once, to show its age and the staleness nudge.
+  // Waits for `window.sites.db` to attach — reading it synchronously here races
+  // the mock's async db attach, which would leave this stuck on "no backup".
   useEffect(() => {
-    const db = window.sites?.db;
-    if (!db) return;
     let cancelled = false;
-    loadBackup(db, email)
-      .then((backup) => {
-        if (!cancelled) setExisting(backup);
+    waitForSitesDb()
+      .then((db) => {
+        if (cancelled || !db) return;
+        return loadBackup(db, email).then((backup) => {
+          if (!cancelled) setExisting(backup);
+        });
       })
       .catch(() => {
         // A corrupt existing backup shouldn't block making a fresh one; the
@@ -65,7 +69,7 @@ export const BackupCard: React.FC<{ email: string }> = ({ email }) => {
   };
 
   const handleBackUp = async () => {
-    const db = window.sites?.db;
+    const db = await waitForSitesDb();
     if (!db) {
       setError("Backup isn't available right now. Try reloading the page.");
       setStatus("error");

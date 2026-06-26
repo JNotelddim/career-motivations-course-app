@@ -15,6 +15,7 @@ import {
 } from "~/lib/backup/snapshot";
 import { CorruptBackupError, loadBackup } from "~/lib/backup/store";
 import { PasswordInput } from "./PasswordInput";
+import { waitForSitesDb } from "./waitForSitesDb";
 
 type Status = "idle" | "loading" | "confirm" | "error";
 
@@ -47,7 +48,7 @@ export const RestoreCard: React.FC<{ email: string }> = ({ email }) => {
   };
 
   const handleRestore = async () => {
-    const db = window.sites?.db;
+    const db = await waitForSitesDb();
     if (!db) {
       setError("Restore isn't available right now. Try reloading the page.");
       setStatus("error");
