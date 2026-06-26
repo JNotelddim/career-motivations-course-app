@@ -11,9 +11,10 @@ export default defineConfig({
     },
   },
   test: {
-    // Node env is enough for the crypto core (Web Crypto, btoa/atob, TextEncoder
-    // are all Node globals). Switch to "jsdom" if/when we test DOM-touching code.
+    // Node env by default — enough for the pure lib cores (Web Crypto, btoa/atob,
+    // TextEncoder are all Node globals). Component tests opt into jsdom per-file
+    // with a `// @vitest-environment jsdom` docblock.
     environment: "node",
-    include: ["app/**/*.test.ts"],
+    include: ["app/**/*.test.{ts,tsx}"],
   },
 });
