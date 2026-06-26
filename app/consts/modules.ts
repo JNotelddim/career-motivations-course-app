@@ -69,7 +69,7 @@ const SCHEIN_ANCHORS = [
 
 const MODULE_1: WorksheetModule = {
     id: 1,
-    title: "Contracting",
+    title: "Name the question",
     description: "Name your questions and what 'ideal' looks like.",
     prereqs: [],
     resources: [
@@ -91,7 +91,7 @@ const MODULE_1: WorksheetModule = {
 
 const MODULE_2: WorksheetModule = {
     id: 2,
-    title: "Self-knowledge",
+    title: "Know yourself",
     description: "Energy/dread audit, lifeline, workview/lifeview.",
     prereqs: [],
     resources: [
@@ -119,7 +119,7 @@ const MODULE_2: WorksheetModule = {
 
 const MODULE_3: WorksheetModule = {
     id: 3,
-    title: "Motivators & Anchors",
+    title: "What drives you",
     description: "Schein anchors forced-rank + a strengths inventory — name what you'd refuse to trade away.",
     prereqs: [],
     resources: [
@@ -178,7 +178,7 @@ const planExercises = (plan: "a" | "b" | "c"): Exercise[] => [
 
 const MODULE_4: WorksheetModule = {
     id: 4,
-    title: "Vision & Odyssey Plans",
+    title: "Imagine possible futures",
     description: "Three divergent 5-year futures (Designing Your Life Odyssey Plans).",
     prereqs: [2, 3],
     resources: [
@@ -201,7 +201,7 @@ const MODULE_4: WorksheetModule = {
 
 const MODULE_5: WorksheetModule = {
     id: 5,
-    title: "Current-state audit",
+    title: "Where you are now",
     description: "A mini-360 + senior-IC archetype check on how the role actually works today.",
     prereqs: [3],
     resources: [
@@ -234,7 +234,7 @@ const MODULE_5: WorksheetModule = {
 
 const MODULE_6: WorksheetModule = {
     id: 6,
-    title: "Gap analysis",
+    title: "Find the gaps",
     description: "Cross a competency model with your 360 + self-rating to pick 2–3 focus areas.",
     prereqs: [3, 4, 5],
     resources: [
@@ -256,7 +256,7 @@ const MODULE_6: WorksheetModule = {
 
 const MODULE_7: WorksheetModule = {
     id: 7,
-    title: "Development plan",
+    title: "Make a plan",
     description: "Turn focus competencies into 1–2 declared behaviors, with feedforward (Goldsmith).",
     prereqs: [6],
     resources: [
@@ -284,7 +284,7 @@ const MODULE_7: WorksheetModule = {
 
 const MODULE_8: WorksheetModule = {
     id: 8,
-    title: "Visibility & influence",
+    title: "Build visibility & influence",
     description: "Map stakeholders, sphere of influence, and your manager-Voltron.",
     prereqs: [],
     resources: [
@@ -306,7 +306,7 @@ const MODULE_8: WorksheetModule = {
 
 const MODULE_9: WorksheetModule = {
     id: 9,
-    title: "Decision-making under ambiguity",
+    title: "Test your big questions",
     description: "Shrink big career questions into the smallest belief-updating experiments.",
     prereqs: [4],
     resources: [
@@ -329,7 +329,7 @@ const MODULE_9: WorksheetModule = {
 
 const MODULE_10: WorksheetModule = {
     id: 10,
-    title: "Sustainment & energy",
+    title: "Sustain your energy",
     description: "Design recovery, early-warning signals, and non-negotiables to sustain the plan.",
     prereqs: [],
     resources: [
@@ -352,7 +352,7 @@ const MODULE_10: WorksheetModule = {
 
 const MODULE_11: WorksheetModule = {
     id: 11,
-    title: "Review & re-contract",
+    title: "Review & adjust",
     description: "Review the arc against your contract — what evidence pivots vs. persists?",
     prereqs: [1],
     resources: [
