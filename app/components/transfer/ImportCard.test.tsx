@@ -62,13 +62,39 @@ const uploadText = (input: HTMLInputElement, text: string, name = "answers.json"
 };
 
 describe("ImportCard", () => {
-  it("applies a valid file when nothing local would be lost", async () => {
+  it("applies a valid file directly when there are no existing answers", async () => {
     const input = openCard();
     uploadText(input, validFileText());
 
     await waitFor(() => expect(applyAnswers).toHaveBeenCalledTimes(1));
     const written = JSON.parse(vi.mocked(applyAnswers).mock.calls[0][0]);
     expect(written[SHORT_ID].value).toBe("Imported answer");
+  });
+
+  it("confirms before overwriting ANY existing answers, then applies on confirm", async () => {
+    // Seed one local answer so the provider hydrates non-empty.
+    localStorage.setItem(
+      "answers",
+      JSON.stringify({
+        [SHORT_ID]: {
+          kind: ExerciseKind.SHORT_TEXT,
+          value: "my local answer",
+          isComplete: true,
+          created: "2026-06-25T10:00:00.000Z",
+          lastEdited: "2026-06-25T10:15:00.000Z",
+        },
+      }),
+    );
+    const input = openCard();
+    uploadText(input, validFileText());
+
+    // Does NOT apply immediately — asks first, even though the file is at-or-ahead.
+    await waitFor(() => expect(screen.getByText(/Replace your existing answers/i)).toBeTruthy());
+    expect(screen.getByText(/all 1 answer /i)).toBeTruthy();
+    expect(applyAnswers).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: /Replace my answers/i }));
+    await waitFor(() => expect(applyAnswers).toHaveBeenCalledTimes(1));
   });
 
   it("shows a malformed-file error and does not apply", async () => {

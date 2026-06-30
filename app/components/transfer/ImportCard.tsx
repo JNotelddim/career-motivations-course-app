@@ -46,6 +46,7 @@ const importErrorMessage = (error: unknown): string => {
  */
 export const ImportCard: React.FC = () => {
   const { answers } = useAnswerState();
+  const existingCount = Object.keys(answers).length;
 
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
@@ -122,13 +123,16 @@ export const ImportCard: React.FC = () => {
       return;
     }
 
-    // Overwrite guard — same comparison as restore, pointed at the file: if local
-    // is further along than the file, importing would drop that newer work.
-    const { regressions, wouldLoseProgress } = compareProgress(
-      buildProgressSnapshot(parsed.answers),
-      buildProgressSnapshot(answers),
-    );
-    if (wouldLoseProgress) {
+    // Overwrite guard: a full replace is destructive to ANY existing answers, so
+    // confirm whenever there's something to overwrite — not only when progress
+    // would regress. When local IS further along than the file in some module,
+    // additionally surface those at-risk modules (the stronger "you'll lose newer
+    // work" signal). Empty local → nothing to overwrite → apply directly.
+    if (existingCount > 0) {
+      const { regressions } = compareProgress(
+        buildProgressSnapshot(parsed.answers),
+        buildProgressSnapshot(answers),
+      );
       setPending({ answers: parsed.answers, regressions });
       setStatus("confirm");
       return;
@@ -176,22 +180,30 @@ export const ImportCard: React.FC = () => {
       ) : status === "confirm" && pending ? (
         <div className="flex flex-col gap-4">
           <Banner tone="warning" icon="⚠️">
-            <p className="font-medium">This will overwrite more recent work.</p>
+            <p className="font-medium">Replace your existing answers?</p>
             <p className="mt-1">
-              Your current answers are further along than this file in these modules — importing
-              will lose that newer progress:
+              This replaces all {existingCount} {existingCount === 1 ? "answer" : "answers"} currently
+              saved in this browser with the file's contents, and can't be undone. Export your current
+              answers first if you want to keep a copy.
             </p>
-            <ul className="mt-2 list-disc pl-5">
-              {pending.regressions.map((r) => (
-                <li key={r.moduleId}>
-                  {moduleTitle(r.moduleId)} — file has {r.snapshotDone}/{r.requiredTotal} done, you
-                  currently have {r.currentDone}/{r.requiredTotal}.
-                </li>
-              ))}
-            </ul>
+            {pending.regressions.length > 0 && (
+              <>
+                <p className="mt-2 font-medium">
+                  Some modules are further along than this file — you'll also lose that newer progress:
+                </p>
+                <ul className="mt-2 list-disc pl-5">
+                  {pending.regressions.map((r) => (
+                    <li key={r.moduleId}>
+                      {moduleTitle(r.moduleId)} — file has {r.snapshotDone}/{r.requiredTotal} done, you
+                      currently have {r.currentDone}/{r.requiredTotal}.
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </Banner>
           <div className="flex gap-2">
-            <Button onClick={() => commit(pending.answers)}>Overwrite anyway</Button>
+            <Button onClick={() => commit(pending.answers)}>Replace my answers</Button>
             <Button onClick={reset}>Cancel</Button>
           </div>
         </div>
