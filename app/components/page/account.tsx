@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { Button } from "../base";
 import { BackupPanel } from "../backup";
+import { TransferPanel } from "../transfer";
 import { useAuth } from "../providers/authProvider";
 import { ROUTES } from "~/consts/routes";
 
@@ -26,7 +27,9 @@ export function Account() {
 
         <BackupPanel email={auth.user.email} />
 
-        {/* TODO: session history, data deletion, data download CTAs */}
+        <TransferPanel />
+
+        {/* TODO: session history, data deletion */}
       </div>
     )}
 

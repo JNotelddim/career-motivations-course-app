@@ -4,7 +4,7 @@ import { ROUTES } from "./app/consts/routes";
 import { MODULES } from "./app/consts/modules";
 
 const getStaticPaths = () => {
-  return [ROUTES.home, ROUTES.account, ROUTES.unauthenticated];
+  return [ROUTES.home, ROUTES.account, ROUTES.unauthenticated, ROUTES.dataFormat];
 }
 
 const getModuleSlugs = () => {

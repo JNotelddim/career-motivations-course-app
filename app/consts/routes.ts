@@ -3,4 +3,5 @@ export const ROUTES = {
     'module': '/module/:moduleId',
     'account': '/account',
     'unauthenticated': '/unauthenticated',
-}; 
+    'dataFormat': '/data-format',
+};

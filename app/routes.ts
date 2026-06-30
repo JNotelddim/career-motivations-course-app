@@ -6,5 +6,6 @@ export default [
     route(ROUTES.module, "./routes/module_page.tsx"),
     route(ROUTES.account, "./routes/account.tsx"),
     route(ROUTES.unauthenticated, "./routes/unauthenticated.tsx"),
+    route(ROUTES.dataFormat, "./routes/data_format.tsx"),
 
 ] satisfies RouteConfig;

@@ -1,0 +1,154 @@
+// @vitest-environment jsdom
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
+
+// Mock the destructive primitive so the happy path doesn't trigger a real
+// reload/navigation (unimplemented in jsdom); we just assert it's invoked.
+vi.mock("~/lib/answers", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("~/lib/answers")>();
+  return { ...actual, applyAnswers: vi.fn() };
+});
+
+import { ImportCard } from "~/components/transfer/ImportCard";
+import { AnswerStateProvider } from "~/components/providers/answerStateProvider";
+import { applyAnswers } from "~/lib/answers";
+import { ExerciseKind, MODULES } from "~/consts/modules";
+import { ANSWERS_FORMAT, ANSWERS_PAYLOAD_VERSION } from "~/lib/transfer/format";
+
+const SHORT_ID = MODULES.flatMap((m) => m.sections.flatMap((s) => s.exercises)).find(
+  (e) => e.kind === ExerciseKind.SHORT_TEXT,
+)!.id;
+
+const validFileText = (): string =>
+  JSON.stringify({
+    format: ANSWERS_FORMAT,
+    version: ANSWERS_PAYLOAD_VERSION,
+    exportedAt: "2026-06-30T12:00:00.000Z",
+    answers: {
+      [SHORT_ID]: {
+        kind: ExerciseKind.SHORT_TEXT,
+        value: "Imported answer",
+        isComplete: true,
+        created: "2026-06-25T10:00:00.000Z",
+        lastEdited: "2026-06-25T10:15:00.000Z",
+      },
+    },
+  });
+
+beforeEach(() => {
+  localStorage.clear();
+  sessionStorage.clear();
+  vi.mocked(applyAnswers).mockClear();
+});
+
+afterEach(cleanup);
+
+const openCard = () => {
+  const { container } = render(
+    <MemoryRouter>
+      <AnswerStateProvider>
+        <ImportCard />
+      </AnswerStateProvider>
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: /import answers/i }));
+  return container.querySelector('input[type="file"]') as HTMLInputElement;
+};
+
+const uploadText = (input: HTMLInputElement, text: string, name = "answers.json") => {
+  const file = new File([text], name, { type: "application/json" });
+  fireEvent.change(input, { target: { files: [file] } });
+};
+
+describe("ImportCard", () => {
+  it("applies a valid file directly when there are no existing answers", async () => {
+    const input = openCard();
+    uploadText(input, validFileText());
+
+    await waitFor(() => expect(applyAnswers).toHaveBeenCalledTimes(1));
+    const written = JSON.parse(vi.mocked(applyAnswers).mock.calls[0][0]);
+    expect(written[SHORT_ID].value).toBe("Imported answer");
+  });
+
+  it("confirms before overwriting ANY existing answers, then applies on confirm", async () => {
+    // Seed one local answer so the provider hydrates non-empty.
+    localStorage.setItem(
+      "answers",
+      JSON.stringify({
+        [SHORT_ID]: {
+          kind: ExerciseKind.SHORT_TEXT,
+          value: "my local answer",
+          isComplete: true,
+          created: "2026-06-25T10:00:00.000Z",
+          lastEdited: "2026-06-25T10:15:00.000Z",
+        },
+      }),
+    );
+    const input = openCard();
+    uploadText(input, validFileText());
+
+    // Does NOT apply immediately — asks first, even though the file is at-or-ahead.
+    await waitFor(() => expect(screen.getByText(/Replace your existing answers/i)).toBeTruthy());
+    expect(screen.getByText(/all 1 answer /i)).toBeTruthy();
+    expect(applyAnswers).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: /Replace my answers/i }));
+    await waitFor(() => expect(applyAnswers).toHaveBeenCalledTimes(1));
+  });
+
+  it("shows a malformed-file error and does not apply", async () => {
+    const input = openCard();
+    uploadText(input, "not json {");
+
+    await waitFor(() => expect(screen.getByText(/isn't a valid answers export/i)).toBeTruthy());
+    expect(applyAnswers).not.toHaveBeenCalled();
+  });
+
+  it("shows an unknown-id error and does not apply", async () => {
+    const input = openCard();
+    uploadText(
+      input,
+      JSON.stringify({
+        format: ANSWERS_FORMAT,
+        version: ANSWERS_PAYLOAD_VERSION,
+        exportedAt: "2026-06-30T12:00:00.000Z",
+        answers: {
+          "m99-does-not-exist": {
+            kind: ExerciseKind.SHORT_TEXT,
+            value: "orphan",
+            isComplete: true,
+            created: "2026-06-25T10:00:00.000Z",
+            lastEdited: "2026-06-25T10:15:00.000Z",
+          },
+        },
+      }),
+    );
+
+    await waitFor(() => expect(screen.getByText(/don't exist in this version/i)).toBeTruthy());
+    expect(applyAnswers).not.toHaveBeenCalled();
+  });
+
+  it("shows a one-time success banner after a reload, then clears the flag", () => {
+    sessionStorage.setItem("answers-import-success", "42");
+    render(
+      <MemoryRouter>
+        <AnswerStateProvider>
+          <ImportCard />
+        </AnswerStateProvider>
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Imported 42 answers/i)).toBeTruthy();
+    // Flag is consumed so it won't reappear on the next mount.
+    expect(sessionStorage.getItem("answers-import-success")).toBeNull();
+  });
+
+  it("rejects a non-JSON file extension without reading it", async () => {
+    const input = openCard();
+    const file = new File(["whatever"], "answers.txt", { type: "text/plain" });
+    fireEvent.change(input, { target: { files: [file] } });
+
+    await waitFor(() => expect(screen.getByText(/choose a \.json file/i)).toBeTruthy());
+    expect(applyAnswers).not.toHaveBeenCalled();
+  });
+});
