@@ -2,7 +2,8 @@ import { useState } from "react";
 import cn from "classnames";
 
 import { MODULES } from "~/consts/modules";
-import { Banner, Button } from "~/components/base";
+import { ROUTES } from "~/consts/routes";
+import { Banner, Button, Link } from "~/components/base";
 import { useAnswerState } from "~/components/providers/answerStateProvider";
 import { applyAnswers } from "~/lib/answers";
 import { buildProgressSnapshot, compareProgress, type ModuleRegression } from "~/lib/backup/snapshot";
@@ -118,7 +119,8 @@ export const ImportCard: React.FC = () => {
       <div>
         <h2 className="text-lg font-semibold">Import answers</h2>
         <p className="text-sm text-gray-600">
-          Load a previously exported answers file. This replaces the answers in this browser.
+          Load a previously exported answers file. This replaces the answers in this browser. See
+          the <Link to={ROUTES.dataFormat}>expected file format</Link>.
         </p>
       </div>
 

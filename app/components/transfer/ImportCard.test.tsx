@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 
 // Mock the destructive primitive so the happy path doesn't trigger a real
 // reload/navigation (unimplemented in jsdom); we just assert it's invoked.
@@ -44,9 +45,11 @@ afterEach(cleanup);
 
 const openCard = () => {
   const { container } = render(
-    <AnswerStateProvider>
-      <ImportCard />
-    </AnswerStateProvider>,
+    <MemoryRouter>
+      <AnswerStateProvider>
+        <ImportCard />
+      </AnswerStateProvider>
+    </MemoryRouter>,
   );
   fireEvent.click(screen.getByRole("button", { name: /import answers/i }));
   return container.querySelector('input[type="file"]') as HTMLInputElement;
