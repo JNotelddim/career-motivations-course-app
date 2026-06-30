@@ -3,6 +3,7 @@ import { useLocation } from "react-router";
 
 import { MODULES } from "~/consts/modules";
 import { Banner, Button } from "~/components/base";
+import { applyAnswers } from "~/lib/answers";
 import { useAnswerState } from "~/components/providers/answerStateProvider";
 import {
   decrypt,
@@ -46,12 +47,6 @@ export const RestoreCard: React.FC<{ email: string }> = ({ email }) => {
     null,
   );
 
-  const applyRestore = (answersJson: string) => {
-    localStorage.setItem("answers", answersJson);
-    // Full reload so every consumer re-reads the restored answers from scratch.
-    window.location.reload();
-  };
-
   const handleRestore = async () => {
     const db = await waitForSitesDb();
     if (!db) {
@@ -83,7 +78,7 @@ export const RestoreCard: React.FC<{ email: string }> = ({ email }) => {
         return;
       }
 
-      applyRestore(answersJson);
+      applyAnswers(answersJson);
     } catch (e) {
       if (e instanceof WrongPasswordError) {
         setError("That password didn't unlock the backup. Double-check it and try again.");
@@ -137,7 +132,7 @@ export const RestoreCard: React.FC<{ email: string }> = ({ email }) => {
             </ul>
           </Banner>
           <div className="flex gap-2">
-            <Button onClick={() => applyRestore(pending.answersJson)}>Overwrite anyway</Button>
+            <Button onClick={() => applyAnswers(pending.answersJson)}>Overwrite anyway</Button>
             <Button onClick={cancel}>Cancel</Button>
           </div>
         </div>
