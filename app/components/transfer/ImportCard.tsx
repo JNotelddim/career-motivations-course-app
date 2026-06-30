@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import cn from "classnames";
 
 import { MODULES } from "~/consts/modules";
@@ -17,6 +17,11 @@ import {
 } from "~/lib/transfer/format";
 
 type Status = "idle" | "reading" | "confirm" | "error";
+
+// Importing ends in a full reload, so a "just imported" confirmation can't live
+// in React state — it'd be wiped before render. Stash the count in sessionStorage
+// just before reloading and surface it once on the next mount.
+const IMPORT_SUCCESS_KEY = "answers-import-success";
 
 const moduleTitle = (id: number) => MODULES.find((m) => m.id === id)?.title ?? `Module ${id}`;
 
@@ -50,6 +55,31 @@ export const ImportCard: React.FC = () => {
     answers: Record<string, AnswerFileValue>;
     regressions: ModuleRegression[];
   } | null>(null);
+  const [justImported, setJustImported] = useState<number | null>(null);
+
+  // Surface the post-reload success confirmation once, then clear it.
+  useEffect(() => {
+    const stored = sessionStorage.getItem(IMPORT_SUCCESS_KEY);
+    if (stored !== null) {
+      setJustImported(Number(stored));
+      sessionStorage.removeItem(IMPORT_SUCCESS_KEY);
+    }
+  }, []);
+
+  // While the importer is open, stop the browser's default "open the dropped
+  // file" navigation for drops ANYWHERE on the page — so a near-miss outside the
+  // drop zone does nothing instead of navigating away. The zone's own onDrop
+  // still fires for drops landing inside it.
+  useEffect(() => {
+    if (!open) return;
+    const prevent = (event: DragEvent) => event.preventDefault();
+    window.addEventListener("dragover", prevent);
+    window.addEventListener("drop", prevent);
+    return () => {
+      window.removeEventListener("dragover", prevent);
+      window.removeEventListener("drop", prevent);
+    };
+  }, [open]);
 
   const reset = () => {
     setStatus("idle");
@@ -57,6 +87,13 @@ export const ImportCard: React.FC = () => {
     setPending(null);
     setDragOver(false);
     setOpen(false);
+  };
+
+  // The shared commit: record a success hint that survives the reload, then
+  // hand off to the destructive apply (writes localStorage + full reload).
+  const commit = (answersMap: Record<string, AnswerFileValue>) => {
+    sessionStorage.setItem(IMPORT_SUCCESS_KEY, String(Object.keys(answersMap).length));
+    applyAnswers(JSON.stringify(answersMap));
   };
 
   const handleFile = async (file: File) => {
@@ -97,7 +134,7 @@ export const ImportCard: React.FC = () => {
       return;
     }
 
-    applyAnswers(JSON.stringify(parsed.answers));
+    commit(parsed.answers);
   };
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,8 +162,16 @@ export const ImportCard: React.FC = () => {
       </div>
 
       {!open ? (
-        <div>
-          <Button onClick={() => setOpen(true)}>Import answers</Button>
+        <div className="flex flex-col gap-3">
+          {justImported !== null && (
+            <Banner tone="info" icon="✅">
+              Imported {justImported} {justImported === 1 ? "answer" : "answers"}. Your saved answers
+              now reflect that file — open a module to see them.
+            </Banner>
+          )}
+          <div>
+            <Button onClick={() => setOpen(true)}>Import answers</Button>
+          </div>
         </div>
       ) : status === "confirm" && pending ? (
         <div className="flex flex-col gap-4">
@@ -146,9 +191,7 @@ export const ImportCard: React.FC = () => {
             </ul>
           </Banner>
           <div className="flex gap-2">
-            <Button onClick={() => applyAnswers(JSON.stringify(pending.answers))}>
-              Overwrite anyway
-            </Button>
+            <Button onClick={() => commit(pending.answers)}>Overwrite anyway</Button>
             <Button onClick={reset}>Cancel</Button>
           </div>
         </div>
@@ -160,6 +203,10 @@ export const ImportCard: React.FC = () => {
           </Banner>
 
           <label
+            onDragEnter={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
             onDragOver={(e) => {
               e.preventDefault();
               setDragOver(true);

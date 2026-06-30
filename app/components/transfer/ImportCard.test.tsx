@@ -38,6 +38,7 @@ const validFileText = (): string =>
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   vi.mocked(applyAnswers).mockClear();
 });
 
@@ -100,6 +101,20 @@ describe("ImportCard", () => {
 
     await waitFor(() => expect(screen.getByText(/don't exist in this version/i)).toBeTruthy());
     expect(applyAnswers).not.toHaveBeenCalled();
+  });
+
+  it("shows a one-time success banner after a reload, then clears the flag", () => {
+    sessionStorage.setItem("answers-import-success", "42");
+    render(
+      <MemoryRouter>
+        <AnswerStateProvider>
+          <ImportCard />
+        </AnswerStateProvider>
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Imported 42 answers/i)).toBeTruthy();
+    // Flag is consumed so it won't reappear on the next mount.
+    expect(sessionStorage.getItem("answers-import-success")).toBeNull();
   });
 
   it("rejects a non-JSON file extension without reading it", async () => {
